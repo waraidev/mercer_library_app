@@ -51,15 +51,24 @@ class _LandingPageState extends State<LandingPage>{
           child: Padding(
             padding: EdgeInsets.all(8.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text("Welcome", textScaleFactor: 3.0,),
+                //TODO: Take a look at this and compare to other page
+                // which is better?
+                Center(child: Text("Welcome", textScaleFactor: 3.0,),),
 
                 RaisedButton(
                   child: _buttonText("Book an Appointment"),
                   onPressed: null,
                 ),
 
+                RaisedButton(
+                  child: _buttonText("View Your Appointments"),
+                  onPressed: null,
+                ),
+
+                //TODO: Turn this into a login page. This works for debug.
                 RaisedButton(
                     child: _buttonText("Turn On Admin Mode"),
                     onPressed: _turnOnAdmin,
