@@ -3,6 +3,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'admin_landing_page.dart';
 
 class LandingPage extends StatefulWidget{
+  LandingPage({Key key, this.title}) : super(key: key);
+
+  final String title;
+
   @override
   _LandingPageState createState() => _LandingPageState();
 }
@@ -10,6 +14,15 @@ class LandingPage extends StatefulWidget{
 class _LandingPageState extends State<LandingPage>{
 
   final String _adminKey = "admin_mode";
+  final String pass = "underwoodmoney";
+
+  TextEditingController passCtrl = new TextEditingController();
+
+  @override
+  void dispose() {
+    passCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   void initState(){
@@ -32,6 +45,15 @@ class _LandingPageState extends State<LandingPage>{
   @override
   Widget build(BuildContext context){
     return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: _navToAdminLandingPage2,
+          )
+        ],
+      ),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -100,6 +122,65 @@ class _LandingPageState extends State<LandingPage>{
     final FlutterSecureStorage storage = FlutterSecureStorage();
     await storage.write(key: _adminKey, value: "true");
     _navToAdminLandingPage();
+  }
+
+  void _navToAdminLandingPage2(){
+    AlertDialog error = new AlertDialog(
+      content: Text("Wrong Password!"),
+    );
+    SimpleDialog login = new SimpleDialog(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+              Radius.circular(10.0))),
+      title: Center(child: Text('LOGIN')),
+      children: <Widget>[
+        Center(child: Text('Enter the admin password below:')),
+
+        TextField(
+            controller: passCtrl,
+            obscureText: true,
+            decoration: InputDecoration(
+                labelText: "Password",
+                hintText: "Enter Admin Password"
+            ),
+            onEditingComplete: () {
+              FocusScope.of(context).requestFocus( FocusNode());
+            }
+        ),
+        RaisedButton(
+          child: Text("Done"),
+          onPressed: () {
+            String inputPass = passCtrl.text;
+            passCtrl.clear();
+            if(inputPass == pass){
+              Navigator.pop(context);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AdminLandingPage())
+              );
+            } else if(inputPass != pass && inputPass != '') {
+              Navigator.of(context).pop();
+              showDialog(
+                  context: context,
+                  builder: (context) { return error; }
+              );
+            }
+          },
+        ),
+
+        RaisedButton(
+          child: Text("Cancel"),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        )
+      ],
+    );
+
+    showDialog(
+      //barrierDismissible: false,
+        context: context,
+        builder: (context) { return login; }
+    );
   }
 }
 
