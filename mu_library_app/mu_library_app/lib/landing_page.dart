@@ -14,7 +14,8 @@ class LandingPage extends StatefulWidget{
 class _LandingPageState extends State<LandingPage>{
 
   final String _adminKey = "admin_mode";
-  final String pass = "underwoodmoney";
+  //TODO: Change _pass to a different password or other password method
+  final String _pass = "underwoodmoney";
 
   TextEditingController passCtrl = new TextEditingController();
 
@@ -156,12 +157,12 @@ class _LandingPageState extends State<LandingPage>{
           onPressed: () {
             String inputPass = passCtrl.text;
             passCtrl.clear();
-            if(inputPass == pass){
+            if(inputPass == _pass){
               Navigator.pop(context);
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => AdminLandingPage())
               );
-            } else if(inputPass != pass && inputPass != '') {
+            } else if(inputPass != _pass && inputPass != '') {
               Navigator.of(context).pop();
               showDialog(
                   context: context,

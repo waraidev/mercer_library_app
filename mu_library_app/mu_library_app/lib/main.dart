@@ -3,8 +3,6 @@ import 'landing_page.dart';
 
 void main() => runApp(MyApp());
 
-final String pass = "underwoodmoney";
-
 class MyApp extends StatelessWidget {
   // This widget is the root of your app.
   @override
