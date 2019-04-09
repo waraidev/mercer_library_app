@@ -136,16 +136,20 @@ class _LandingPageState extends State<LandingPage>{
       children: <Widget>[
         Center(child: Text('Enter the admin password below:')),
 
-        TextField(
-            controller: passCtrl,
-            obscureText: true,
-            decoration: InputDecoration(
-                labelText: "Password",
-                hintText: "Enter Admin Password"
-            ),
-            onEditingComplete: () {
-              FocusScope.of(context).requestFocus( FocusNode());
-            }
+        GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus( FocusNode());
+          },
+          child: TextField(
+              controller: passCtrl,
+              obscureText: true,
+              decoration: InputDecoration(
+                  labelText: "Password",
+                  contentPadding: EdgeInsets.symmetric(vertical: 6.0,
+                      horizontal: 8.0),
+                  hintText: "Enter Admin Password"
+              ),
+          )
         ),
         RaisedButton(
           child: Text("Done"),
