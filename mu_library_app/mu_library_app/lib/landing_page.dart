@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'admin_landing_page.dart';
+import 'book_appt_form.dart';
 
 class LandingPage extends StatefulWidget{
   @override
@@ -60,7 +61,7 @@ class _LandingPageState extends State<LandingPage>{
 
                 RaisedButton(
                   child: _buttonText("Book an Appointment"),
-                  onPressed: null,
+                  onPressed: _navToForm,
                 ),
 
                 RaisedButton(
@@ -93,6 +94,12 @@ class _LandingPageState extends State<LandingPage>{
   void _navToAdminLandingPage(){
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => AdminLandingPage())
+    );
+  }
+
+  void _navToForm(){
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => MainForm())
     );
   }
 

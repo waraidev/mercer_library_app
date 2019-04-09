@@ -16,6 +16,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  sprintf: "^4.0.0"
+
   # These may be used later for login services,
   # so they are going to stick around for now.
   #bloc: ^0.8.0
