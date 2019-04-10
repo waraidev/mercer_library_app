@@ -14,16 +14,12 @@ class MyApp extends StatelessWidget {
         //TODO: Make a theme (at least a color)
         primarySwatch: Colors.orange,
       ),
-      home: MyHomePage(title: 'Mercer Research To-Go'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -38,9 +34,6 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.title),),
-      body: LandingPage(),
-    );
+    return LandingPage(title: 'Mercer Research To-Go');
   }
 }
