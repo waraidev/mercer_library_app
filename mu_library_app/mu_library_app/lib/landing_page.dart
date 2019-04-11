@@ -91,8 +91,10 @@ class _LandingPageState extends State<LandingPage>{
                   child: _buttonText("View Your Appointments"),
                   onPressed: null,
                 ),
+                //TODO: Add something that takes the user to the library website.
+                //I feel like the librarians would enjoy having that.
 
-                //TODO: Turn this into a login page. This works for debug.
+                //TODO: Remove this eventually
                 RaisedButton(
                     child: _buttonText("Turn On Admin Mode"),
                     onPressed: _turnOnAdmin,

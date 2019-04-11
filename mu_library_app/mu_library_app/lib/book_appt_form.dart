@@ -170,6 +170,7 @@ class _MainFormState extends State<MainForm>{
         ),
       ),
 
+      //TODO: Fix the way this looks, or remove the trashcan button entirely
       floatingActionButton: Row(
         //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
@@ -198,7 +199,11 @@ class _MainFormState extends State<MainForm>{
         initialDate: today,
         firstDate: today,
         lastDate: DateTime(2101),
+        selectableDayPredicate: (DateTime val) =>
+            val.weekday == 6 || val.weekday == 7 ? false : true,
     );
+    //TODO: Change this to a drop down (since they are in discrete time slots)
+    //Also it'll be easier to populate the available/taken time slots that way
     final TimeOfDay timePicked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(hour: 0, minute: 0),
@@ -239,10 +244,12 @@ class _MainFormState extends State<MainForm>{
         _selDateTimeStr += ", ${_selectedDateTime.month}/${_selectedDateTime.day} at ";
         int hr = timePicked.hour;
         bool PM = false;
-        if(hr >= 12){
+        if(hr > 12){
           PM = true;
           hr = hr - 12;
         }
+        else if(hr == 12)
+          PM = true;
         _selDateTimeStr += sprintf("%02d:%02d", [hr, timePicked.minute]);
         if(PM)
           _selDateTimeStr += " PM";
