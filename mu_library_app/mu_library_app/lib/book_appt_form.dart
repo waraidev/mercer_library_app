@@ -14,6 +14,8 @@ String dropdownValue;
 class _MainFormState extends State<MainForm>{
 
   final mainReference = Firestore.instance.collection('appointments').document();
+  ApptData _entry;
+
   DateTime _selectedDateTime;
   final double _pad = 10;
   String _selDateTimeStr, _dropdownValue, _dropdownValue2, _errorText;
@@ -302,10 +304,24 @@ class _MainFormState extends State<MainForm>{
       return Container();
   }
 
+  String _formatTime(int hr, int minute) {
+    //TODO: Write this method and apply it to _submit and _selectDateTime
+  }
+
   void _submit() async{
     if(_nameInput.text.isEmpty)
       setState((){
         _errorText = "ERROR";
+
+
+
+        _entry = ApptData(
+            "${_selectedDateTime.month}/${_selectedDateTime.day}",  //Date
+            "${_dropdownValue}, ${_dropdownValue2}",  //Location
+            _muidInput.text,
+            _nameInput.text,
+            "crap"    //TODO: Finish this
+        );
       });
     else
       Navigator.pop(context);

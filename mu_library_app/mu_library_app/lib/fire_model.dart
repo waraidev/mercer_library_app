@@ -1,11 +1,10 @@
 //This is the class for the Firebase data
 
 class ApptData {
-  String apptDate, apptLoc, apptMUid, apptName,
-      apptRoom, apptTime;
+  String apptDate, apptLoc, apptMUid, apptName, apptTime;
 
   ApptData(this.apptDate, this.apptLoc, this.apptMUid,
-      this.apptName, this.apptRoom, this.apptTime);
+      this.apptName, this.apptTime);
 
   toJson() {
     return {
