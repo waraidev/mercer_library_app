@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "332402477025",
+    "firebase_url": "https://mercer-research-to-go.firebaseio.com",
+    "project_id": "mercer-research-to-go",
+    "storage_bucket": "mercer-research-to-go.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:332402477025:android:21511d259ba929f3",
+        "android_client_info": {
+          "package_name": "edu.mercer.mulibraryapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "332402477025-6pa0urubd7alqhgssp28mq0bro47v8gc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWj5F-Awa88sr7mAr69bGXxFi4e7IR-G8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "332402477025-6pa0urubd7alqhgssp28mq0bro47v8gc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

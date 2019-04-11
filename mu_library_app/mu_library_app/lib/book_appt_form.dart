@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sprintf/sprintf.dart';
+import 'fire_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class MainForm extends StatefulWidget{
   @override
@@ -10,6 +13,7 @@ String dropdownValue;
 
 class _MainFormState extends State<MainForm>{
 
+  final mainReference = Firestore.instance.collection('appointments').document();
   DateTime _selectedDateTime;
   final double _pad = 10;
   String _selDateTimeStr, _dropdownValue, _dropdownValue2, _errorText;
