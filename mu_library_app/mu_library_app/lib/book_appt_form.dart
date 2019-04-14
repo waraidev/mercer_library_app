@@ -226,7 +226,7 @@ class _MainFormState extends State<MainForm>{
 
                   SizedBox(height: _pad - 1,),
 
-                  _timePicker(context),
+                  _timePicker2(context),
 
                   DropdownButtonHideUnderline(
                     child: InputDecorator(
@@ -288,10 +288,12 @@ class _MainFormState extends State<MainForm>{
 
   void _selectDateTime(BuildContext context) async {
     DateTime today = DateTime.now();
+    bool wDay = today.weekday == 6 || today.weekday == 7 ? false : true;
+
     final DateTime datePicked = await showDatePicker(
       context: context,
-      initialDate: today,
       firstDate: today,
+      initialDate: wDay ? today : today.add(new Duration(days: 8-today.weekday)),
       lastDate: DateTime(2101),
       selectableDayPredicate: (DateTime val) =>
       val.weekday == 6 || val.weekday == 7 ? false : true,
@@ -363,11 +365,85 @@ class _MainFormState extends State<MainForm>{
       return Container();
   }
 
+  Widget _timePicker2(BuildContext context){    //Test timePicker
+    var docs;
+    DateTime t;
+    List<TimeOfDay> _availableTimes = new List();
+    for(int i = 9; i <= 17; i++)
+      _availableTimes.add(TimeOfDay(hour: i, minute: 0));
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance.collection('appointments').snapshots(),
+      builder: (context, snapshot) {
+        docs = snapshot.data.documents;
+        if(!snapshot.hasData) return CircularProgressIndicator();
+        for(int i = 0; i < docs.length; i++) {
+          t = docs.elementAt(i)['datetime'].toDate();
+          _availableTimes.remove(TimeOfDay.fromDateTime(t));
+          //TODO: Make sure times are only removed for the correct day
+        }
+        //Dropdown functionality below
+        if(_isDateChosen){
+          if(_availableTimes.isEmpty){
+            return DropdownButtonHideUnderline(
+              child: InputDecorator(
+                decoration: InputDecoration(
+                  labelText: 'No times available for the chosen day.',
+                ),
+                isEmpty: true,
+                child: null,
+              ),
+            );
+          }
+          else {
+            return DropdownButtonHideUnderline(
+              child: InputDecorator(
+                decoration: InputDecoration(
+                  labelText: _selectedTime == null ?
+                  'Please select a time...' : 'Time',
+                ),
+                isEmpty: _selectedTime == null,
+                child: new DropdownButton<TimeOfDay>(
+                  value: _selectedTime,
+                  isDense: true,
+                  onChanged: (TimeOfDay newValue) {
+                    setState(() {
+                      if(newValue != _selectedTime || _selectedTime == null){
+                        _selectedTime = newValue;
+                        _rebuildSelDateTimeStr();
+                      }
+                    });
+                  },
+                  items: _availableTimes.map((TimeOfDay value){
+                    return DropdownMenuItem<TimeOfDay>(
+                      value: value,
+                      child: Text(_timeOfDayToString(value)),
+                    );
+                  }).toList(),
+                ),
+              ),
+            );
+          }
+        }
+        else
+          return DropdownButtonHideUnderline(
+            child: InputDecorator(
+              decoration: InputDecoration(
+                labelText: 'Please select a date first.',
+              ),
+              isEmpty: true,
+              child: null,
+            ),
+          );
+
+      },
+    );
+  }
+
   Widget _timePicker(BuildContext context){
     if(_isDateChosen){
-      List<TimeOfDay> _availableTimes = new List<TimeOfDay>();
+      List<TimeOfDay> _availableTimes = new List();
       _availableTimes.add(TimeOfDay.now());
-      //TODO: Populate times here
       if(_availableTimes.isEmpty){
         return DropdownButtonHideUnderline(
           child: InputDecorator(
