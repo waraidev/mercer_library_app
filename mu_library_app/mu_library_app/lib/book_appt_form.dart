@@ -33,6 +33,7 @@ class _MainFormState extends State<MainForm>{
   TextEditingController _muidInput = TextEditingController();
   TextEditingController _emailInput = TextEditingController();
   TextEditingController _majorInput = TextEditingController();
+  TextEditingController _detailInput = TextEditingController();
 
   @override
   void dispose(){
@@ -170,7 +171,7 @@ class _MainFormState extends State<MainForm>{
                     ),
                   ),
 
-                  SizedBox(height: _pad,),
+                  SizedBox(height: _pad),
 
                   TextField(
                     controller: _majorInput,
@@ -190,15 +191,29 @@ class _MainFormState extends State<MainForm>{
 
                   SizedBox(height: _pad - 1),
 
+                  TextField(    //Additional Details box
+                    controller: _detailInput,
+                    onEditingComplete: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                    },
+                    textCapitalization: TextCapitalization.none,
+                    decoration: InputDecoration(
+                      hintText: "Any more details to aid in research?",
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.orange[700]),
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
+                      labelText: "Additional Details",
+                    ),
+                  ),
+
+                  SizedBox(height: _pad - 1),
+
                   Container(
                     height: 50,
                     child: RaisedButton(
                       child: Text("Select a date/time..."),
-                      onPressed: () {
-                        FocusScope.of(context).requestFocus(FocusNode());
-
-                        _selectDateTime(context);
-                      },
+                      onPressed: () => _selectDateTime(context),
                     ),
                   ),
 
@@ -243,11 +258,9 @@ class _MainFormState extends State<MainForm>{
                     ),
                   ),
 
-                  SizedBox(height: _pad,),
+                  SizedBox(height: _pad),
 
                   _chooseSpecificLoc(context),
-
-                  //TODO: Add one more text field describing research needs
                 ],
               ),
             ),
@@ -309,7 +322,7 @@ class _MainFormState extends State<MainForm>{
       if(_selectedLocation == "Connell Student Center")
         _specificLocItems = <String>["Which Wich"];
       else if(_selectedLocation == "Mercer Village")
-        _specificLocItems = <String>["ZBeans", "Outside Bookstore"];
+        _specificLocItems = <String>["Z Beans", "Outside Bookstore"];
       else if(_selectedLocation == "University Center")
         _specificLocItems = <String>["Food Court", "Main Hallway"];
       else if(_selectedLocation == "Tarver Library")
@@ -501,13 +514,14 @@ class _MainFormState extends State<MainForm>{
         _selectedTime.minute
       );
       _entry = ApptData(
-          _selectedDate,
-          _selectedLocation,
-          _muidInput.text,
-          _nameInput.text,
-          _emailInput.text,
-          _majorInput.text,
-          _specificLoc
+        _selectedDate,
+        _selectedLocation,
+        _muidInput.text,
+        _nameInput.text,
+        _emailInput.text,
+        _majorInput.text,
+        _specificLoc,
+        _detailInput.text
       );
 
       mainReference.setData(_entry.toJson());

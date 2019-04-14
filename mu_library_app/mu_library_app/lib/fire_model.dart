@@ -1,22 +1,22 @@
 //This is the class for the Firebase data
 
 class ApptData {
-  DateTime apptDateTime;
-  String apptLoc, apptMUid, apptName,
-      apptEmail, apptMajor, apptSpecLoc;
+  DateTime dateTime;
+  String loc, muid, name, email, major, specLoc, extraDetails;
 
-  ApptData(this.apptDateTime, this.apptLoc, this.apptMUid,
-      this.apptName, this.apptEmail, this.apptMajor, this.apptSpecLoc);
+  ApptData(this.dateTime, this.loc, this.muid, this.name,
+      this.email, this.major, this.specLoc, this.extraDetails);
 
   toJson() {
     return {
-      "datetime": apptDateTime,
-      "location": apptLoc,
-      "muid": apptMUid,
-      "name": apptName,
-      "email": apptEmail,
-      "major": apptMajor,
-      "specloc": apptSpecLoc
+      "datetime": dateTime,
+      "location": loc,
+      "muid": muid,
+      "name": name,
+      "email": email,
+      "major": major,
+      "specloc": specLoc,
+      "details": extraDetails
     };
   }
 }
