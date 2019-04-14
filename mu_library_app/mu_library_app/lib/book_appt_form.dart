@@ -366,8 +366,7 @@ class _MainFormState extends State<MainForm>{
   }
 
   Widget _timePicker2(BuildContext context){    //Test timePicker
-    var docs;
-    DateTime t;
+    var docs, t;
     List<TimeOfDay> _availableTimes = new List();
     for(int i = 9; i <= 17; i++)
       _availableTimes.add(TimeOfDay(hour: i, minute: 0));
@@ -375,11 +374,13 @@ class _MainFormState extends State<MainForm>{
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance.collection('appointments').snapshots(),
       builder: (context, snapshot) {
-        docs = snapshot.data.documents;
         if(!snapshot.hasData) return CircularProgressIndicator();
+        docs = snapshot.data.documents;
         for(int i = 0; i < docs.length; i++) {
           t = docs.elementAt(i)['datetime'].toDate();
-          _availableTimes.remove(TimeOfDay.fromDateTime(t));
+          if(_selectedDate != null)
+            if(_selectedDate.day == t.day && _selectedDate.month == t.month)
+              _availableTimes.remove(TimeOfDay.fromDateTime(t));
           //TODO: Make sure times are only removed for the correct day
         }
         //Dropdown functionality below
@@ -559,11 +560,13 @@ class _MainFormState extends State<MainForm>{
 
   //TODO: complete submit function (check all fields filled out)
   void _submit(BuildContext context){
+    Navigator.pop(context);
+
     if(_nameInput.text.isEmpty || _muidInput.text.isEmpty ||
         _emailInput.text.isEmpty || _emailError != null ||
-        _majorInput.text.isEmpty ||
-        _selectedDate == null || _selectedTime == null ||
-        _selectedLocation == null)
+        _majorInput.text.isEmpty || _selectedDate == null ||
+        _selectedTime == null || _selectedLocation == null) {
+
       setState((){
         _errorText = "Please complete the following fields:\n";
         if(_nameInput.text.isEmpty)
@@ -581,7 +584,7 @@ class _MainFormState extends State<MainForm>{
         if(_selectedLocation == null)
           _errorText += "Location, ";
       });
-    else {
+    } else {
       _selectedDate = new DateTime(
         _selectedDate.year,
         _selectedDate.month,
@@ -589,6 +592,13 @@ class _MainFormState extends State<MainForm>{
         _selectedTime.hour,
         _selectedTime.minute
       );
+
+      if(_specificLoc == null)  //To avoid null call, didn't fix it
+        _specificLoc = "No further info.";
+
+      if(_detailInput.text.isEmpty)
+        _detailInput.text = "No additional details.";
+
       _entry = ApptData(
         _selectedDate,
         _selectedLocation,
@@ -602,7 +612,7 @@ class _MainFormState extends State<MainForm>{
 
       mainReference.setData(_entry.toJson());
 
-      Navigator.pop(context);
+
     }
 
   }
