@@ -8,8 +8,6 @@ class MainForm extends StatefulWidget{
   _MainFormState createState() => _MainFormState();
 }
 
-String dropdownValue;
-
 class _MainFormState extends State<MainForm>{
 
   ApptData _entry;
@@ -42,6 +40,7 @@ class _MainFormState extends State<MainForm>{
     _muidInput.dispose();
     _emailInput.dispose();
     _majorInput.dispose();
+    _detailInput.dispose();
   }
 
   @override
@@ -94,8 +93,6 @@ class _MainFormState extends State<MainForm>{
           child: Padding(
             padding: EdgeInsets.all(_pad),
             child: Center(
-              //TODO: Should the sign-up include name?
-              // How anonymous should it be?
               child: ListView(
                 //crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
@@ -198,7 +195,7 @@ class _MainFormState extends State<MainForm>{
                     },
                     textCapitalization: TextCapitalization.none,
                     decoration: InputDecoration(
-                      hintText: "Any more details to aid in research?",
+                      hintText: "Please describe your research needs...",
                       border: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.orange[700]),
                         borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -279,11 +276,11 @@ class _MainFormState extends State<MainForm>{
 
   void _validateEmail(){
     if(_emailInput.text.isEmpty) return;
-    if(_emailInput.text.contains("@") && _emailInput.text.contains(".") &&
-        _emailInput.text.lastIndexOf(".") > _emailInput.text.indexOf("@"))
+    if(_emailInput.text.contains("@") &&
+        _emailInput.text.toLowerCase().endsWith("mercer.edu"))
       _emailError = null;
     else
-      _emailError = "Invalid email address";
+      _emailError = "Please provide a valid Mercer email address.";
   }
 
   void _selectDateTime(BuildContext context) async {
@@ -294,7 +291,7 @@ class _MainFormState extends State<MainForm>{
       context: context,
       firstDate: today,
       initialDate: wDay ? today : today.add(new Duration(days: 8-today.weekday)),
-      lastDate: DateTime(2101),
+      lastDate: DateTime(today.year + 1),
       selectableDayPredicate: (DateTime val) =>
       val.weekday == 6 || val.weekday == 7 ? false : true,
     );
@@ -368,7 +365,7 @@ class _MainFormState extends State<MainForm>{
   Widget _timePicker2(BuildContext context){    //Test timePicker
     var docs, t;
     List<TimeOfDay> _availableTimes = new List();
-    for(int i = 9; i <= 17; i++)
+    for(int i = 9; i <= 16; i++)
       _availableTimes.add(TimeOfDay(hour: i, minute: 0));
 
     return StreamBuilder<QuerySnapshot>(
@@ -565,7 +562,8 @@ class _MainFormState extends State<MainForm>{
     if(_nameInput.text.isEmpty || _muidInput.text.isEmpty ||
         _emailInput.text.isEmpty || _emailError != null ||
         _majorInput.text.isEmpty || _selectedDate == null ||
-        _selectedTime == null || _selectedLocation == null) {
+        _selectedTime == null || _selectedLocation == null ||
+        _detailInput.text.isEmpty) {
 
       setState((){
         _errorText = "Please complete the following fields:\n";
@@ -583,6 +581,8 @@ class _MainFormState extends State<MainForm>{
           _errorText += "Time, ";
         if(_selectedLocation == null)
           _errorText += "Location, ";
+        if(_detailInput.text.isEmpty)
+          _errorText += "Additional Details";
       });
     } else {
       _selectedDate = new DateTime(
@@ -595,9 +595,6 @@ class _MainFormState extends State<MainForm>{
 
       if(_specificLoc == null)  //To avoid null call, didn't fix it
         _specificLoc = "No further info.";
-
-      if(_detailInput.text.isEmpty)
-        _detailInput.text = "No additional details.";
 
       _entry = ApptData(
         _selectedDate,
@@ -624,6 +621,7 @@ class _MainFormState extends State<MainForm>{
       _muidInput.clear();
       _emailInput.clear();
       _majorInput.clear();
+      _detailInput.clear();
       _isLocChosen = false;
       _isDateChosen = false;
       _errorText = null;
