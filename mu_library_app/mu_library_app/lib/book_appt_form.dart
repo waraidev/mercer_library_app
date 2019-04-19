@@ -19,13 +19,15 @@ class _MainFormState extends State<MainForm>{
   TimeOfDay _selectedTime;
   final double _pad = 10;
   String _selDateTimeStr, _selectedLocation,
-      _specificLoc, _errorText, _emailError;
+      _specificLoc, _errorText, _emailError,
+      _meetingType;
   bool _isLocChosen, _isDateChosen;
   static final List<String> _dropdownItems = <String>[
     'Connell Student Center', 'Mercer Village', 'University Center',
     'Tarver Library', "Einstein's", 'Stetson Computer Labs'
   ];
   static List<String> _specificLocItems;
+  int _videoMeeting = 0;
 
   TextEditingController _nameInput = TextEditingController();
   TextEditingController _muidInput = TextEditingController();
@@ -188,24 +190,6 @@ class _MainFormState extends State<MainForm>{
 
                   SizedBox(height: _pad - 1),
 
-                  TextField(    //Additional Details box
-                    controller: _detailInput,
-                    onEditingComplete: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                    },
-                    textCapitalization: TextCapitalization.none,
-                    decoration: InputDecoration(
-                      hintText: "Please describe your research needs...",
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.orange[700]),
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                      labelText: "Additional Details",
-                    ),
-                  ),
-
-                  SizedBox(height: _pad - 1),
-
                   Container(
                     height: 50,
                     child: RaisedButton(
@@ -258,6 +242,64 @@ class _MainFormState extends State<MainForm>{
                   SizedBox(height: _pad),
 
                   _chooseSpecificLoc(context),
+
+                  SizedBox(height: _pad),
+
+                  Column(
+                    //crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Center(
+                        child: Text("Meeting Type"),
+                      ),
+
+                      Row(
+                        children: <Widget>[
+                          Radio(
+                            value: 0,
+                            groupValue: _videoMeeting,
+                            onChanged: _onRadioChange,
+                          ),
+
+                          FlatButton(
+                            child: Text("In-Person"),
+                            onPressed: () => _onRadioChange(0),
+                          ),
+
+                          Spacer(),
+
+                          Radio(
+                            value: 1,
+                            groupValue: _videoMeeting,
+                            onChanged: _onRadioChange,
+                          ),
+
+                          FlatButton(
+                            child: Text("Video Call"),
+                            onPressed: () => _onRadioChange(1),
+                          ),
+                        ],
+                      ),
+
+                    ],
+                  ),
+
+                  SizedBox(height: _pad),
+
+                  TextField( //Additional Details box
+                    controller: _detailInput,
+                    onEditingComplete: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                    },
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                      hintText: "Please describe your research needs...",
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.orange[700]),
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
+                      labelText: "Additional Details",
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -273,6 +315,8 @@ class _MainFormState extends State<MainForm>{
       ),
     );
   }
+
+  ////////////////////////////////////////////////////////////////////////////
 
   void _validateEmail(){
     if(_emailInput.text.isEmpty) return;
@@ -438,6 +482,7 @@ class _MainFormState extends State<MainForm>{
     );
   }
 
+  //TODO: Delete when everything is finalized
   Widget _timePicker(BuildContext context){
     if(_isDateChosen){
       List<TimeOfDay> _availableTimes = new List();
@@ -555,9 +600,17 @@ class _MainFormState extends State<MainForm>{
     }
   }
 
+  void _onRadioChange(int value){
+    setState((){
+      _videoMeeting = value;
+    });
+  }
+
   //TODO: complete submit function (check all fields filled out)
   void _submit(BuildContext context){
-    Navigator.pop(context);
+    setState((){
+      _errorText = "";
+    });
 
     if(_nameInput.text.isEmpty || _muidInput.text.isEmpty ||
         _emailInput.text.isEmpty || _emailError != null ||
@@ -584,34 +637,106 @@ class _MainFormState extends State<MainForm>{
         if(_detailInput.text.isEmpty)
           _errorText += "Additional Details";
       });
-    } else {
+    }
+    else {
       _selectedDate = new DateTime(
         _selectedDate.year,
         _selectedDate.month,
         _selectedDate.day,    //Adds time to DateTime for Firebase
         _selectedTime.hour,
-        _selectedTime.minute
+        _selectedTime.minute,
       );
 
       if(_specificLoc == null)  //To avoid null call, didn't fix it
         _specificLoc = "No further info.";
 
-      _entry = ApptData(
-        _selectedDate,
-        _selectedLocation,
-        _muidInput.text,
-        _nameInput.text,
-        _emailInput.text,
-        _majorInput.text,
-        _specificLoc,
-        _detailInput.text
+      switch(_videoMeeting){
+        case 0:
+          _meetingType = "In-Person";
+          break;
+        case 1:
+          _meetingType = "Video Conference";
+          break;
+        default:
+          _meetingType = "Unknown";
+          break;
+      }
+
+      _checkMeetingType();
+    }
+  }
+
+  void _checkMeetingType(){
+    if(_videoMeeting == 1){
+      SimpleDialog check = new SimpleDialog(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Center(
+                    child: Text('NOTE: You and the assisting librarian are responsible for arranging a video conference. You will be contacted shortly to work this out. Do you wish to proceed?')
+                ),
+
+                RaisedButton(
+                  child: Text("Cancel"),
+                  onPressed: (){
+                    Navigator.pop(context);
+                  },
+                ),
+
+                RaisedButton(
+                  child: Text("Proceed"),
+                  onPressed: (){
+                    setState((){
+                      _entry = ApptData(
+                        _selectedDate,
+                        _selectedLocation,
+                        _muidInput.text,
+                        _nameInput.text,
+                        _emailInput.text,
+                        _majorInput.text,
+                        _specificLoc,
+                        _detailInput.text,
+                        _meetingType,
+                      );
+
+                      mainReference.setData(_entry.toJson());
+                    });
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
       );
 
-      mainReference.setData(_entry.toJson());
-
-
+      showDialog(
+        barrierDismissible: false,
+          context: context,
+          builder: (context) { return check; }
+      );
     }
+    else
+      setState((){
+        _entry = ApptData(
+          _selectedDate,
+          _selectedLocation,
+          _muidInput.text,
+          _nameInput.text,
+          _emailInput.text,
+          _majorInput.text,
+          _specificLoc,
+          _detailInput.text,
+          _meetingType,
+        );
 
+        mainReference.setData(_entry.toJson());
+        Navigator.pop(context);
+      });
   }
 
   //TODO: Find a way to use this function?
