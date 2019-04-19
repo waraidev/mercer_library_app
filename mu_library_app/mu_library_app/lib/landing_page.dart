@@ -144,49 +144,57 @@ class _LandingPageState extends State<LandingPage>{
               Radius.circular(10.0))),
       title: Center(child: Text('LOGIN')),
       children: <Widget>[
-        Center(child: Text('Enter the admin password below:')),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Center(child: Text('Enter the admin password below:')),
 
-        GestureDetector(
-          onTap: () {
-            FocusScope.of(context).requestFocus( FocusNode());
-          },
-          child: TextField(
-              controller: passCtrl,
-              obscureText: true,
-              decoration: InputDecoration(
-                  labelText: "Password",
-                  contentPadding: EdgeInsets.symmetric(vertical: 6.0,
-                      horizontal: 8.0),
-                  hintText: "Enter Admin Password"
+              GestureDetector(
+                  onTap: () {
+                    FocusScope.of(context).requestFocus( FocusNode());
+                  },
+                  child: TextField(
+                    controller: passCtrl,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                        labelText: "Password",
+                        contentPadding: EdgeInsets.symmetric(vertical: 6.0,
+                            horizontal: 8.0),
+                        hintText: "Enter Admin Password"
+                    ),
+                  )
               ),
-          )
-        ),
-        RaisedButton(
-          child: Text("Done"),
-          onPressed: () {
-            String inputPass = passCtrl.text;
-            passCtrl.clear();
-            if(inputPass == _pass){
-              Navigator.pop(context);
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => AdminLandingPage())
-              );
-            } else if(inputPass != _pass && inputPass != '') {
-              Navigator.of(context).pop();
-              showDialog(
-                  context: context,
-                  builder: (context) { return error; }
-              );
-            }
-          },
-        ),
+              RaisedButton(
+                child: Text("Done"),
+                onPressed: () {
+                  String inputPass = passCtrl.text;
+                  passCtrl.clear();
+                  if(inputPass == _pass){
+                    Navigator.pop(context);
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => AdminLandingPage())
+                    );
+                  } else if(inputPass != _pass && inputPass != '') {
+                    Navigator.of(context).pop();
+                    showDialog(
+                        context: context,
+                        builder: (context) { return error; }
+                    );
+                  }
+                },
+              ),
 
-        RaisedButton(
-          child: Text("Cancel"),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        )
+              RaisedButton(
+                child: Text("Cancel"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          ),
+        ),
       ],
     );
 

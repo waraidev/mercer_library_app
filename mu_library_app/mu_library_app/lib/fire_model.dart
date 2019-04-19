@@ -2,10 +2,10 @@
 
 class ApptData {
   DateTime dateTime;
-  String loc, muid, name, email, major, specLoc, extraDetails;
+  String loc, muid, name, email, major, specLoc, extraDetails, meetingType;
 
   ApptData(this.dateTime, this.loc, this.muid, this.name,
-      this.email, this.major, this.specLoc, this.extraDetails);
+      this.email, this.major, this.specLoc, this.extraDetails, this.meetingType);
 
   toJson() {
     return {
@@ -16,7 +16,8 @@ class ApptData {
       "email": email,
       "major": major,
       "specloc": specLoc,
-      "details": extraDetails
+      "details": extraDetails,
+      "meeting-type": meetingType,
     };
   }
 }
