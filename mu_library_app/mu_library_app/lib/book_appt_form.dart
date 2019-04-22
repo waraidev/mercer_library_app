@@ -61,6 +61,215 @@ class _MainFormState extends State<MainForm>{
 
   @override
   Widget build(BuildContext context) {
+    final formWidgets = <Widget>[
+      Text(_errorText ==  null ? "" : _errorText,
+        textScaleFactor: 1.4,
+        style: TextStyle(
+          color: Colors.red,
+          //fontStyle: FontStyle.italic,
+        ),
+      ),
+
+      Column(
+        //crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Center(
+            child: Text("Meeting Type"),
+          ),
+
+          Row(
+            children: <Widget>[
+              Radio(
+                value: 0,
+                groupValue: _videoMeeting,
+                onChanged: _onRadioChange,
+              ),
+
+              FlatButton(
+                child: Text("In-Person"),
+                onPressed: () => _onRadioChange(0),
+              ),
+
+              Spacer(),
+
+              Radio(
+                value: 1,
+                groupValue: _videoMeeting,
+                onChanged: _onRadioChange,
+              ),
+
+              FlatButton(
+                child: Text("Video Call"),
+                onPressed: () => _onRadioChange(1),
+              ),
+            ],
+          ),
+
+        ],
+      ),
+
+      SizedBox(height: _pad),
+
+      TextField(
+        controller: _nameInput,
+        onEditingComplete: (){
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        textCapitalization: TextCapitalization.words,
+        decoration: InputDecoration(
+          hintText: "Please enter your name",
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.orange[700]),
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+          ),
+          labelText: "Name",
+        ),
+      ),
+
+      SizedBox(height: _pad),
+
+      TextField(
+        controller: _muidInput,
+        keyboardType: TextInputType.number,
+        maxLength: 8,
+        maxLengthEnforced: true,
+        onEditingComplete: (){
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        decoration: InputDecoration(
+          hintText: "Please enter your MUID",
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.orange[700]),
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+          ),
+          labelText: "MUID",
+          counterText: "",
+        ),
+      ),
+
+      SizedBox(height: _pad),
+
+      TextField(
+        controller: _emailInput,
+        onEditingComplete: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+          _validateEmail();
+        },
+        keyboardType: TextInputType.emailAddress,
+        textCapitalization: TextCapitalization.none,
+        decoration: InputDecoration(
+          hintText: "Please enter your email address",
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.orange[700]),
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+          ),
+          labelText: "Email",
+        ),
+      ),
+
+      Text(_emailError ==  null ? "" : _emailError,
+        style: TextStyle(
+          color: Colors.red,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
+
+      SizedBox(height: _pad),
+
+      TextField(
+        controller: _majorInput,
+        onEditingComplete: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        textCapitalization: TextCapitalization.none,
+        decoration: InputDecoration(
+          hintText: "What is your major?",
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.orange[700]),
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+          ),
+          labelText: "Major/Dept.",
+        ),
+      ),
+
+      SizedBox(height: _pad - 1),
+
+      Container(
+        height: 50,
+        child: RaisedButton(
+          child: Text("Select a date/time..."),
+          onPressed: () => _selectDateTime(context),
+        ),
+      ),
+
+      SizedBox(height: _pad/2,),
+
+      Text(_selDateTimeStr,
+        textScaleFactor: 1.3,
+        style: TextStyle(fontWeight: FontWeight.bold,),
+      ),
+
+      SizedBox(height: _pad - 1,),
+
+      _timePicker2(context),
+
+      DropdownButtonHideUnderline(
+        child: InputDecorator(
+          decoration: InputDecoration(
+            labelText: _selectedLocation == null ?
+            'Please select a location...' : 'Location',
+          ),
+          isEmpty: _selectedLocation == null,
+          child: new DropdownButton<String>(
+            value: _selectedLocation,
+            isDense: true,
+            onChanged: (String newValue) {
+              setState(() {
+                if(newValue != _selectedLocation || _selectedLocation == null) {
+                  _isLocChosen = false;
+                  _selectedLocation = newValue;
+                  _specificLoc = null;
+                  _isLocChosen = true;
+                }
+              });
+            },
+            items: _dropdownItems.map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+
+      SizedBox(height: _pad),
+
+      _chooseSpecificLoc(context),
+
+      SizedBox(height: _pad),
+
+      TextField( //Additional Details box
+        controller: _detailInput,
+        onEditingComplete: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        textCapitalization: TextCapitalization.sentences,
+        decoration: InputDecoration(
+          hintText: "Please describe your research needs...",
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.orange[700]),
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+          ),
+          labelText: "Additional Details",
+        ),
+      ),
+    ];
+
+    if(_videoMeeting != 0) {
+      formWidgets.removeRange(17, 20); //location dropdown, specloc, etc
+    }
+
     return Scaffold(
 
       resizeToAvoidBottomPadding: false,
@@ -97,210 +306,7 @@ class _MainFormState extends State<MainForm>{
             child: Center(
               child: ListView(
                 //crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Text(_errorText ==  null ? "" : _errorText,
-                    textScaleFactor: 1.4,
-                    style: TextStyle(
-                      color: Colors.red,
-                      //fontStyle: FontStyle.italic,
-                    ),
-                  ),
-
-                  TextField(
-                    controller: _nameInput,
-                    onEditingComplete: (){
-                      FocusScope.of(context).requestFocus(FocusNode());
-                    },
-                    textCapitalization: TextCapitalization.words,
-                    decoration: InputDecoration(
-                      hintText: "Please enter your name",
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.orange[700]),
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                      labelText: "Name",
-                    ),
-                  ),
-
-                  SizedBox(height: _pad),
-
-                  TextField(
-                    controller: _muidInput,
-                    keyboardType: TextInputType.number,
-                    maxLength: 8,
-                    maxLengthEnforced: true,
-                    onEditingComplete: (){
-                      FocusScope.of(context).requestFocus(FocusNode());
-                    },
-                    decoration: InputDecoration(
-                      hintText: "Please enter your MUID",
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.orange[700]),
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                      labelText: "MUID",
-                      counterText: "",
-                    ),
-                  ),
-
-                  SizedBox(height: _pad,),
-
-                  TextField(
-                    controller: _emailInput,
-                    onEditingComplete: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      _validateEmail();
-                    },
-                    keyboardType: TextInputType.emailAddress,
-                    textCapitalization: TextCapitalization.none,
-                    decoration: InputDecoration(
-                      hintText: "Please enter your email address",
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.orange[700]),
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                      labelText: "Email",
-                    ),
-                  ),
-
-                  Text(_emailError ==  null ? "" : _emailError,
-                    style: TextStyle(
-                      color: Colors.red,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-
-                  SizedBox(height: _pad),
-
-                  TextField(
-                    controller: _majorInput,
-                    onEditingComplete: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                    },
-                    textCapitalization: TextCapitalization.none,
-                    decoration: InputDecoration(
-                      hintText: "What is your major?",
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.orange[700]),
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                      labelText: "Major/Dept.",
-                    ),
-                  ),
-
-                  SizedBox(height: _pad - 1),
-
-                  Container(
-                    height: 50,
-                    child: RaisedButton(
-                      child: Text("Select a date/time..."),
-                      onPressed: () => _selectDateTime(context),
-                    ),
-                  ),
-
-                  SizedBox(height: _pad/2,),
-
-                  Text(_selDateTimeStr,
-                    textScaleFactor: 1.3,
-                    style: TextStyle(fontWeight: FontWeight.bold,),
-                  ),
-
-                  SizedBox(height: _pad - 1,),
-
-                  _timePicker2(context),
-
-                  DropdownButtonHideUnderline(
-                    child: InputDecorator(
-                      decoration: InputDecoration(
-                        labelText: _selectedLocation == null ?
-                        'Please select a location...' : 'Location',
-                      ),
-                      isEmpty: _selectedLocation == null,
-                      child: new DropdownButton<String>(
-                        value: _selectedLocation,
-                        isDense: true,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            if(newValue != _selectedLocation || _selectedLocation == null) {
-                              _isLocChosen = false;
-                              _selectedLocation = newValue;
-                              _specificLoc = null;
-                              _isLocChosen = true;
-                            }
-                          });
-                        },
-                        items: _dropdownItems.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: _pad),
-
-                  _chooseSpecificLoc(context),
-
-                  SizedBox(height: _pad),
-
-                  Column(
-                    //crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Center(
-                        child: Text("Meeting Type"),
-                      ),
-
-                      Row(
-                        children: <Widget>[
-                          Radio(
-                            value: 0,
-                            groupValue: _videoMeeting,
-                            onChanged: _onRadioChange,
-                          ),
-
-                          FlatButton(
-                            child: Text("In-Person"),
-                            onPressed: () => _onRadioChange(0),
-                          ),
-
-                          Spacer(),
-
-                          Radio(
-                            value: 1,
-                            groupValue: _videoMeeting,
-                            onChanged: _onRadioChange,
-                          ),
-
-                          FlatButton(
-                            child: Text("Video Call"),
-                            onPressed: () => _onRadioChange(1),
-                          ),
-                        ],
-                      ),
-
-                    ],
-                  ),
-
-                  SizedBox(height: _pad),
-
-                  TextField( //Additional Details box
-                    controller: _detailInput,
-                    onEditingComplete: () {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                    },
-                    textCapitalization: TextCapitalization.sentences,
-                    decoration: InputDecoration(
-                      hintText: "Please describe your research needs...",
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.orange[700]),
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                      labelText: "Additional Details",
-                    ),
-                  ),
-                ],
+                children: formWidgets
               ),
             ),
           ),
@@ -608,6 +614,9 @@ class _MainFormState extends State<MainForm>{
 
   //TODO: complete submit function (check all fields filled out)
   void _submit(BuildContext context){
+    DateTime submitDate;
+    String videoLoc, noSpecLoc;
+
     setState((){
       _errorText = "";
     });
@@ -615,7 +624,8 @@ class _MainFormState extends State<MainForm>{
     if(_nameInput.text.isEmpty || _muidInput.text.isEmpty ||
         _emailInput.text.isEmpty || _emailError != null ||
         _majorInput.text.isEmpty || _selectedDate == null ||
-        _selectedTime == null || _selectedLocation == null ||
+        _selectedTime == null ||
+        (_selectedLocation == null && _videoMeeting == 0) ||
         _detailInput.text.isEmpty) {
 
       setState((){
@@ -639,7 +649,7 @@ class _MainFormState extends State<MainForm>{
       });
     }
     else {
-      _selectedDate = new DateTime(
+      submitDate = new DateTime(  //changed to avoid exception
         _selectedDate.year,
         _selectedDate.month,
         _selectedDate.day,    //Adds time to DateTime for Firebase
@@ -647,8 +657,11 @@ class _MainFormState extends State<MainForm>{
         _selectedTime.minute,
       );
 
+      if(_videoMeeting != 0)
+        videoLoc = "N/A";
+
       if(_specificLoc == null)  //To avoid null call, didn't fix it
-        _specificLoc = "No further info.";
+        noSpecLoc = "No further info.";
 
       switch(_videoMeeting){
         case 0:
@@ -662,11 +675,11 @@ class _MainFormState extends State<MainForm>{
           break;
       }
 
-      _checkMeetingType();
+      _checkMeetingType(submitDate, videoLoc, noSpecLoc);
     }
   }
 
-  void _checkMeetingType(){
+  void _checkMeetingType(DateTime submit, String vLoc, String sLoc){
     if(_videoMeeting == 1){
       SimpleDialog check = new SimpleDialog(
         children: <Widget>[
@@ -691,13 +704,13 @@ class _MainFormState extends State<MainForm>{
                   onPressed: (){
                     setState((){
                       _entry = ApptData(
-                        _selectedDate,
-                        _selectedLocation,
+                        submit,   //changed to avoid exception
+                        _selectedLocation == null ? vLoc : _selectedLocation,
                         _muidInput.text,
                         _nameInput.text,
                         _emailInput.text,
                         _majorInput.text,
-                        _specificLoc,
+                        _specificLoc == null ? sLoc : _specificLoc,
                         _detailInput.text,
                         _meetingType,
                       );
@@ -723,13 +736,13 @@ class _MainFormState extends State<MainForm>{
     else
       setState((){
         _entry = ApptData(
-          _selectedDate,
-          _selectedLocation,
+          submit,   //changed to avoid exception
+          _selectedLocation == null ? vLoc : _selectedLocation,
           _muidInput.text,
           _nameInput.text,
           _emailInput.text,
           _majorInput.text,
-          _specificLoc,
+          _specificLoc == null ? sLoc : _specificLoc,
           _detailInput.text,
           _meetingType,
         );
