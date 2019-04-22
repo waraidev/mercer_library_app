@@ -31,7 +31,7 @@ class _LandingPageState extends State<LandingPage>{
     super.initState();
     _getMode().then((result){
       if(result)
-        _navToAdminLandingPage();
+        _navToPage(AdminLandingPage());
     });
   }
 
@@ -84,7 +84,7 @@ class _LandingPageState extends State<LandingPage>{
 
                 RaisedButton(
                   child: _buttonText("Book an Appointment"),
-                  onPressed: _navToForm,
+                  onPressed: () => _navToPage(MainForm()),
                 ),
 
                 RaisedButton(
@@ -116,22 +116,16 @@ class _LandingPageState extends State<LandingPage>{
     );
   }
 
-  void _navToAdminLandingPage(){
+  void _navToPage(Widget widget) {
     Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AdminLandingPage())
-    );
-  }
-
-  void _navToForm(){
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => MainForm())
+        MaterialPageRoute(builder: (context) => widget)
     );
   }
 
   void _turnOnAdmin() async{
     final FlutterSecureStorage storage = FlutterSecureStorage();
     await storage.write(key: _adminKey, value: "true");
-    _navToAdminLandingPage();
+    _navToPage(AdminLandingPage());
   }
 
   void _navToAdminLandingPage2(){
@@ -173,9 +167,7 @@ class _LandingPageState extends State<LandingPage>{
                   passCtrl.clear();
                   if(inputPass == _pass){
                     Navigator.pop(context);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => AdminLandingPage())
-                    );
+                    _navToPage(AdminLandingPage());
                   } else if(inputPass != _pass && inputPass != '') {
                     Navigator.of(context).pop();
                     showDialog(
