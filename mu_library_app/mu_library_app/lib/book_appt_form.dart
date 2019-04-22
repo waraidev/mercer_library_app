@@ -70,44 +70,6 @@ class _MainFormState extends State<MainForm>{
         ),
       ),
 
-      Column(
-        //crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Center(
-            child: Text("Meeting Type"),
-          ),
-
-          Row(
-            children: <Widget>[
-              Radio(
-                value: 0,
-                groupValue: _videoMeeting,
-                onChanged: _onRadioChange,
-              ),
-
-              FlatButton(
-                child: Text("In-Person"),
-                onPressed: () => _onRadioChange(0),
-              ),
-
-              Spacer(),
-
-              Radio(
-                value: 1,
-                groupValue: _videoMeeting,
-                onChanged: _onRadioChange,
-              ),
-
-              FlatButton(
-                child: Text("Video Call"),
-                onPressed: () => _onRadioChange(1),
-              ),
-            ],
-          ),
-
-        ],
-      ),
-
       SizedBox(height: _pad),
 
       TextField(
@@ -158,7 +120,7 @@ class _MainFormState extends State<MainForm>{
         keyboardType: TextInputType.emailAddress,
         textCapitalization: TextCapitalization.none,
         decoration: InputDecoration(
-          hintText: "Please enter your email address",
+          hintText: "Please enter your Mercer email address",
           border: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.orange[700]),
             borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -211,43 +173,55 @@ class _MainFormState extends State<MainForm>{
 
       SizedBox(height: _pad - 1,),
 
-      _timePicker2(context),
+      _timePicker(context),
 
-      DropdownButtonHideUnderline(
-        child: InputDecorator(
-          decoration: InputDecoration(
-            labelText: _selectedLocation == null ?
-            'Please select a location...' : 'Location',
+      SizedBox(height: _pad/2),
+
+      Column(
+        //crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Center(
+            child: Text("Meeting Type"),
           ),
-          isEmpty: _selectedLocation == null,
-          child: new DropdownButton<String>(
-            value: _selectedLocation,
-            isDense: true,
-            onChanged: (String newValue) {
-              setState(() {
-                if(newValue != _selectedLocation || _selectedLocation == null) {
-                  _isLocChosen = false;
-                  _selectedLocation = newValue;
-                  _specificLoc = null;
-                  _isLocChosen = true;
-                }
-              });
-            },
-            items: _dropdownItems.map((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
+
+          Row(
+            children: <Widget>[
+              Radio(
+                value: 0,
+                groupValue: _videoMeeting,
+                onChanged: _onRadioChange,
+              ),
+
+              FlatButton(
+                child: Text("In-Person"),
+                onPressed: () => _onRadioChange(0),
+              ),
+
+              Spacer(),
+
+              Radio(
+                value: 1,
+                groupValue: _videoMeeting,
+                onChanged: _onRadioChange,
+              ),
+
+              FlatButton(
+                child: Text("Video Call"),
+                onPressed: () => _onRadioChange(1),
+              ),
+            ],
           ),
-        ),
+
+        ],
       ),
 
-      SizedBox(height: _pad),
+      _selectLoc(context),  //Created method to deal with Video Call select
+
+      SizedBox(height: _pad/2),
 
       _chooseSpecificLoc(context),
 
-      SizedBox(height: _pad),
+      SizedBox(height: _pad/2),
 
       TextField( //Additional Details box
         controller: _detailInput,
@@ -265,10 +239,6 @@ class _MainFormState extends State<MainForm>{
         ),
       ),
     ];
-
-    if(_videoMeeting != 0) {
-      formWidgets.removeRange(17, 20); //location dropdown, specloc, etc
-    }
 
     return Scaffold(
 
@@ -341,6 +311,8 @@ class _MainFormState extends State<MainForm>{
       context: context,
       firstDate: today,
       initialDate: wDay ? today : today.add(new Duration(days: 8-today.weekday)),
+      //initialDate bool is so that there is no error while making an
+                                            //appointment on the weekend
       lastDate: DateTime(today.year + 1),
       selectableDayPredicate: (DateTime val) =>
       val.weekday == 6 || val.weekday == 7 ? false : true,
@@ -357,7 +329,9 @@ class _MainFormState extends State<MainForm>{
   }
 
   Widget _chooseSpecificLoc(BuildContext context){
-    if(_isLocChosen) {
+    if(_videoMeeting != 0)
+      return Container();
+    else if(_isLocChosen) {
       /*
       Possible locations:
         Connell Student Center
@@ -412,7 +386,43 @@ class _MainFormState extends State<MainForm>{
       return Container();
   }
 
-  Widget _timePicker2(BuildContext context){    //Test timePicker
+  Widget _selectLoc(BuildContext context) {
+    if(_videoMeeting != 0)  //if video call is selected, the selectLocation
+      return Container();         //option will not appear
+    else {
+      return DropdownButtonHideUnderline(
+        child: InputDecorator(
+          decoration: InputDecoration(
+            labelText: _selectedLocation == null ?
+            'Please select a location...' : 'Location',
+          ),
+          isEmpty: _selectedLocation == null,
+          child: new DropdownButton<String>(
+            value: _selectedLocation,
+            isDense: true,
+            onChanged: (String newValue) {
+              setState(() {
+                if(newValue != _selectedLocation || _selectedLocation == null) {
+                  _isLocChosen = false;
+                  _selectedLocation = newValue;
+                  _specificLoc = null;
+                  _isLocChosen = true;
+                }
+              });
+            },
+            items: _dropdownItems.map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget _timePicker(BuildContext context){
     var docs, t;
     List<TimeOfDay> _availableTimes = new List();
     for(int i = 9; i <= 16; i++)
@@ -486,64 +496,6 @@ class _MainFormState extends State<MainForm>{
 
       },
     );
-  }
-
-  //TODO: Delete when everything is finalized
-  Widget _timePicker(BuildContext context){
-    if(_isDateChosen){
-      List<TimeOfDay> _availableTimes = new List();
-      _availableTimes.add(TimeOfDay.now());
-      if(_availableTimes.isEmpty){
-        return DropdownButtonHideUnderline(
-          child: InputDecorator(
-            decoration: InputDecoration(
-              labelText: 'No times available for the chosen day.',
-            ),
-            isEmpty: true,
-            child: null,
-          ),
-        );
-      }
-      else {
-        return DropdownButtonHideUnderline(
-          child: InputDecorator(
-            decoration: InputDecoration(
-              labelText: _selectedTime == null ?
-              'Please select a time...' : 'Time',
-            ),
-            isEmpty: _selectedTime == null,
-            child: new DropdownButton<TimeOfDay>(
-              value: _selectedTime,
-              isDense: true,
-              onChanged: (TimeOfDay newValue) {
-                setState(() {
-                  if(newValue != _selectedTime || _selectedTime == null){
-                    _selectedTime = newValue;
-                    _rebuildSelDateTimeStr();
-                  }
-                });
-              },
-              items: _availableTimes.map((TimeOfDay value){
-                return DropdownMenuItem<TimeOfDay>(
-                  value: value,
-                  child: Text(_timeOfDayToString(value)),
-                );
-              }).toList(), //TODO: populate times once Firebase is online
-            ),
-          ),
-        );
-      }
-    }
-    else
-      return DropdownButtonHideUnderline(
-        child: InputDecorator(
-          decoration: InputDecoration(
-            labelText: 'Please select a date first.',
-          ),
-          isEmpty: true,
-          child: null,
-        ),
-      );
   }
 
   String _timeOfDayToString(TimeOfDay tod){
@@ -689,7 +641,10 @@ class _MainFormState extends State<MainForm>{
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 Center(
-                    child: Text('NOTE: You and the assisting librarian are responsible for arranging a video conference. You will be contacted shortly to work this out. Do you wish to proceed?')
+                    child: Text('NOTE: You and the assisting librarian are '
+                        'responsible for arranging a video conference. '
+                        'You will be contacted shortly to work this out. '
+                        'Do you wish to proceed?')
                 ),
 
                 RaisedButton(
