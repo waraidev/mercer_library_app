@@ -43,22 +43,32 @@ class _AdminLandingPageState extends State<AdminLandingPage>{
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text("Welcome, Admin", textScaleFactor: 2.5,),
+                  Text("Welcome, Admin", textScaleFactor: 2.8),
 
-                  RaisedButton(
-                    child: _buttonText("View All Appointments"),
-                    onPressed: () => _navToPage(ViewAdminAppt()),
+                  SizedBox(height: 20),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    child: RaisedButton(
+                      child: _buttonText("View All Appointments"),
+                      onPressed: () => _navToPage(ViewAdminAppt()),
+                    ),
                   ),
 
-                  RaisedButton(
-                    child: _buttonText("Schedule an Event"),
-                    onPressed: () => _navToPage(AdminEventSchedule()),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    child: RaisedButton(
+                      child: _buttonText("Schedule an Event"),
+                      onPressed: () => _navToPage(AdminEventSchedule()),
+                    )
                   ),
 
-                  RaisedButton(
-                    child: _buttonText("Turn Off Admin Mode"),
-                    onPressed: () => _turnOffAdmin(context),
-                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    child: RaisedButton(
+                      child: _buttonText("Turn Off Admin Mode"),
+                      onPressed: () => _turnOffAdmin(context),
+                    ),
+                  )
                 ],
               ),
             ),
