@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'admin_landing_page.dart';
 import 'book_appt_form.dart';
+import 'user_appt_view.dart';
 
 class LandingPage extends StatefulWidget{
   LandingPage({Key key, this.title}) : super(key: key);
@@ -37,8 +38,8 @@ class _LandingPageState extends State<LandingPage>{
 
   Future<bool> _getMode() async{
     final FlutterSecureStorage storage = FlutterSecureStorage();
-    String _admin = await storage.read(key: _adminKey);
-    if(_admin != null || _admin == "true")
+    String _admin = await storage.read(key: _adminKey) ?? "false";
+    if(_admin == "true")
       return true;
     else
       return false;
@@ -89,7 +90,7 @@ class _LandingPageState extends State<LandingPage>{
 
                 RaisedButton(
                   child: _buttonText("View Your Appointments"),
-                  onPressed: null,
+                  onPressed: () => _navToPage(ViewAppts()),
                 ),
                 //TODO: Add something that takes the user to the library website.
                 //I feel like the librarians would enjoy having that.
