@@ -438,8 +438,11 @@ class _MainFormState extends State<MainForm>{
         for(int i = 0; i < docs.length; i++) {
           t = docs.elementAt(i)['datetime'].toDate();
           if(_selectedDate != null)
-            if(_selectedDate.day == t.day && _selectedDate.month == t.month)
-              _availableTimes.remove(TimeOfDay.fromDateTime(t));
+            if(_selectedDate.day == t.day && _selectedDate.month == t.month){
+              if(_availableTimes.contains(TimeOfDay.fromDateTime(t)))
+                _availableTimes.remove(TimeOfDay.fromDateTime(t));
+            }
+
           //TODO: Make sure times are only removed for the correct day
         }
         //Dropdown functionality below
