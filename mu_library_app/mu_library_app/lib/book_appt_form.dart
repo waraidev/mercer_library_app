@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sprintf/sprintf.dart';
 import 'fire_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainForm extends StatefulWidget{
   @override
@@ -13,7 +14,8 @@ class _MainFormState extends State<MainForm>{
   ApptData _entry;
 
   final mainReference = Firestore
-      .instance.collection('appointments').document();
+      .instance.collection('appointments');
+  final String _prefsKey = "get_appts_pls";
 
   DateTime _selectedDate;
   TimeOfDay _selectedTime;
@@ -261,13 +263,12 @@ class _MainFormState extends State<MainForm>{
           ),
           decoration: BoxDecoration(
             image: DecorationImage(
-              //TODO: Different background photo here?
-              image: AssetImage("assets/images/tarver.jpeg"),
+              image: AssetImage("assets/images/willingham.jpg"),
               fit: BoxFit.cover,
               matchTextDirection: true,
               //Reduce opacity of background image
               colorFilter: ColorFilter.mode(
-                  Colors.black.withOpacity(0.3),
+                  Colors.black.withOpacity(0.15),
                   BlendMode.dstATop
               ),
             ),
@@ -285,6 +286,7 @@ class _MainFormState extends State<MainForm>{
         ),
       ),
 
+      //Submit Button
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.check),
         heroTag: null,
@@ -636,7 +638,7 @@ class _MainFormState extends State<MainForm>{
     }
   }
 
-  void _checkMeetingType(DateTime submit, String vLoc, String sLoc){
+  Future<void> _checkMeetingType(DateTime submit, String vLoc, String sLoc) async{
     if(_videoMeeting == 1){
       SimpleDialog check = new SimpleDialog(
         children: <Widget>[
@@ -661,8 +663,7 @@ class _MainFormState extends State<MainForm>{
 
                 RaisedButton(
                   child: Text("Proceed"),
-                  onPressed: (){
-                    setState((){
+                  onPressed: () async{
                       _entry = ApptData(
                         submit,   //changed to avoid exception
                         _selectedLocation == null ? vLoc : _selectedLocation,
@@ -675,10 +676,20 @@ class _MainFormState extends State<MainForm>{
                         _meetingType,
                       );
 
-                      mainReference.setData(_entry.toJson());
-                    });
-                    Navigator.pop(context);
-                    Navigator.pop(context);
+                      DocumentReference docRef = await mainReference.add(_entry.toJson());
+                      //Store ID of newly made doc into shared prefs
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      List<String> keysList = prefs.getStringList(_prefsKey) ?? new List<String>();
+                      keysList.add(docRef.documentID);
+                      prefs.setStringList(_prefsKey, keysList);
+                      setState((){
+                        _specificLocItems = null;
+                        _specificLoc = null;
+                        _selectedLocation = null;
+                      });
+                      //get outta that page
+                      Navigator.pop(context);
+                      Navigator.pop(context);
                   },
                 ),
               ],
@@ -693,23 +704,34 @@ class _MainFormState extends State<MainForm>{
           builder: (context) { return check; }
       );
     }
-    else
-      setState((){
-        _entry = ApptData(
-          submit,   //changed to avoid exception
-          _selectedLocation == null ? vLoc : _selectedLocation,
-          _muidInput.text,
-          _nameInput.text,
-          _emailInput.text,
-          _majorInput.text,
-          _specificLoc == null ? sLoc : _specificLoc,
-          _detailInput.text,
-          _meetingType,
-        );
+    else {
+      _entry = ApptData(
+        submit,
+        //changed to avoid exception
+        _selectedLocation == null ? vLoc : _selectedLocation,
+        _muidInput.text,
+        _nameInput.text,
+        _emailInput.text,
+        _majorInput.text,
+        _specificLoc == null ? sLoc : _specificLoc,
+        _detailInput.text,
+        _meetingType,
+      );
 
-        mainReference.setData(_entry.toJson());
-        Navigator.pop(context);
+      DocumentReference docRef = await mainReference.add(_entry.toJson());
+      //Store ID of newly made doc into shared prefs
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<String> keysList = prefs.getStringList(_prefsKey) ?? new List<String>();
+      keysList.add(docRef.documentID);
+      prefs.setStringList(_prefsKey, keysList);
+      setState((){
+        _specificLocItems = null;
+        _specificLoc = null;
+        _selectedLocation = null;
       });
+      //get outta that page
+      Navigator.pop(context);
+    }
   }
 
   //TODO: Find a way to use this function?

@@ -14,19 +14,34 @@ class _ViewAdminState extends State<ViewAdminAppt> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Admin View Appointments')),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: mainReference.snapshots(),
-        builder: (context, snapshot) {
-          if(!snapshot.hasData) return CircularProgressIndicator();
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/quad.jpg"),
+            fit: BoxFit.cover,
+            matchTextDirection: true,
+            //Reduce opacity of background image
+            colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(0.15),
+                BlendMode.dstATop
+            ),
+          ),
+        ),
 
-          List<DocumentSnapshot> docList = snapshot.data.documents;
+        child: StreamBuilder<QuerySnapshot>(
+          stream: mainReference.snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) return CircularProgressIndicator();
 
-          return ListView.builder(
-            itemBuilder: (context, index) =>
-                _buildAdminList(docList, context, index),
-            itemCount: docList.length,
-          );
-        },
+            List<DocumentSnapshot> docList = snapshot.data.documents;
+
+            return ListView.builder(
+              itemBuilder: (context, index) =>
+                  _buildAdminList(docList, context, index),
+              itemCount: docList.length,
+            );
+          },
+        ),
       ),
     );
   }
@@ -40,7 +55,10 @@ class _ViewAdminState extends State<ViewAdminAppt> {
 
     return ExpansionTile(
       key: PageStorageKey<int>(0),
-      title: Text(ds['name'] + '  |  ' + dateTime),
+      title: Text(ds['name'] + '  |  ' + dateTime,
+      //style: TextStyle(
+        //fontWeight: FontWeight.w500,
+      ),//),
       children: <Widget>[
         Padding(
           padding: EdgeInsets.all(15.0),
@@ -74,7 +92,7 @@ class _ViewAdminState extends State<ViewAdminAppt> {
         children: <TextSpan>[
           TextSpan(text: bold,
               style: TextStyle(fontWeight: FontWeight.bold)),
-          TextSpan(text: text)
+          TextSpan(text: text,),
         ]
       ),
     );
