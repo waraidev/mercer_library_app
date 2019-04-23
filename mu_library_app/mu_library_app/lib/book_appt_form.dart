@@ -225,6 +225,8 @@ class _MainFormState extends State<MainForm>{
 
       TextField( //Additional Details box
         controller: _detailInput,
+        keyboardType: TextInputType.multiline,
+        maxLines: 4,
         onEditingComplete: () {
           FocusScope.of(context).requestFocus(FocusNode());
         },

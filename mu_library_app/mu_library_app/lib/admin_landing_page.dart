@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'admin_appt_view.dart';
 
 class AdminLandingPage extends StatefulWidget{
   @override
@@ -45,7 +46,7 @@ class _AdminLandingPageState extends State<AdminLandingPage>{
 
                   RaisedButton(
                     child: _buttonText("View All Appointments"),
-                    onPressed: null,
+                    onPressed: () => _navToPage(ViewAdminAppt()),
                   ),
 
                   RaisedButton(
@@ -70,6 +71,12 @@ class _AdminLandingPageState extends State<AdminLandingPage>{
     final FlutterSecureStorage storage = FlutterSecureStorage();
     await storage.write(key: _adminKey, value: "false");
     Navigator.of(context).pop();
+  }
+
+  void _navToPage(Widget widget) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => widget)
+    );
   }
 }
 
