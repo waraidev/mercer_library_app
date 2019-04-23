@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'admin_appt_view.dart';
+import 'admin_event_schedule.dart';
 
 class AdminLandingPage extends StatefulWidget{
   @override
@@ -51,7 +52,7 @@ class _AdminLandingPageState extends State<AdminLandingPage>{
 
                   RaisedButton(
                     child: _buttonText("Schedule an Event"),
-                    onPressed: null,
+                    onPressed: () => _navToPage(AdminEventSchedule()),
                   ),
 
                   RaisedButton(
