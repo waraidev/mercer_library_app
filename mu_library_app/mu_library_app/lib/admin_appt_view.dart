@@ -47,97 +47,36 @@ class _ViewAdminState extends State<ViewAdminAppt> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              RichText(   //Name and MUID
-                text: TextSpan(
-                    style: TextStyle(       //Rich Text allows the first part to
-                        color: Colors.black           //be bold
-                    ),
-                    children: <TextSpan>[
-                      TextSpan(text: 'Name, MUID: ',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      TextSpan(text: ds['name'] + ', ' + ds['muid'])
-                    ]
-                ),
-              ),
-              RichText(     //Email
-                text: TextSpan(
-                    style: TextStyle(
-                        color: Colors.black
-                    ),
-                    children: <TextSpan>[
-                      TextSpan(text: 'Email: ',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      TextSpan(text: ds['email'])
-                    ]
-                ),
-              ),
-              RichText(     //Major
-                text: TextSpan(
-                    style: TextStyle(
-                        color: Colors.black
-                    ),
-                    children: <TextSpan>[
-                      TextSpan(text: 'Major: ',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      TextSpan(text: ds['major'])
-                    ]
-                ),
-              ),
-              RichText(     //Date and Time
-                text: TextSpan(
-                    style: TextStyle(
-                        color: Colors.black
-                    ),
-                    children: <TextSpan>[
-                      TextSpan(text: 'Date and Time: ',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      TextSpan(text: dateTime)
-                    ]
-                ),
-              ),
-              RichText(     //Location
-                text: TextSpan(
-                    style: TextStyle(
-                        color: Colors.black
-                    ),
-                    children: <TextSpan>[
-                      TextSpan(text: 'Location: ',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      TextSpan(text: ds['location'] + ', ' + ds['specloc'])
-                    ]
-                ),
-              ),
-              RichText(     //Meeting Type
-                text: TextSpan(
-                    style: TextStyle(
-                        color: Colors.black
-                    ),
-                    children: <TextSpan>[
-                      TextSpan(text: 'Meeting Type: ',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      TextSpan(text: ds['meeting-type'])
-                    ]
-                ),
-              ),
-              RichText(     //Details
-                text: TextSpan(
-                    style: TextStyle(
-                        color: Colors.black
-                    ),
-                    children: <TextSpan>[
-                      TextSpan(text: 'Details: ',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      TextSpan(text: ds['details'])
-                    ]
-                ),
-              ),
+              _createRichText('Name, MUID: ', ds['name'] + ', ' + ds['muid']),
+
+              _createRichText('Email: ', ds['email']),
+              _createRichText('Major: ', ds['major']),
+              _createRichText('Date and Time: ', dateTime),
+              _createRichText('Location: ',
+                  ds['location'] + ', ' + ds['specloc']),
+
+              _createRichText('Meeting Type: ', ds['meeting-type']),
+              _createRichText('Details: ', ds['details']),
               SizedBox(height: 14)
             ],
           ),
         )
       ],
     );
+  }
 
-    //Add expansion panels.
+  Widget _createRichText(String bold, String text) {
+    return RichText(
+      text: TextSpan(
+        style: TextStyle(         //Rich Text allows the first part to
+            color: Colors.black               //be bold
+        ),
+        children: <TextSpan>[
+          TextSpan(text: bold,
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          TextSpan(text: text)
+        ]
+      ),
+    );
   }
 }
