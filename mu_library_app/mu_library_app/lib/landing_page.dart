@@ -72,15 +72,12 @@ class _LandingPageState extends State<LandingPage>{
         ),
 
         child: Center(
-          //TODO: Make this look better
           child: Padding(
             padding: EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                //TODO: Take a look at this and compare to other page
-                // which is better?
                 Center(child: Text("Welcome", textScaleFactor: 3.0,),),
 
                 RaisedButton(

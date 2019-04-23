@@ -62,6 +62,7 @@ class _AdminLandingPageState extends State<AdminLandingPage>{
                     )
                   ),
 
+                  //TODO: Replace this with a smaller button in the corner
                   Container(
                     width: MediaQuery.of(context).size.width * 0.7,
                     child: RaisedButton(
