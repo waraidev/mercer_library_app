@@ -426,6 +426,26 @@ class _MainFormState extends State<MainForm>{
     }
   }
 
+  void removeAvailableTimes() async {   //Replicates functionality below, test later
+    var docs, t;
+    List<TimeOfDay> _availableTimes = new List();
+    for(int i = 9; i <= 16; i++)
+      _availableTimes.add(TimeOfDay(hour: i, minute: 0));
+
+    List<QuerySnapshot> snaps = await mainReference.snapshots().toList();
+    for (var i in snaps) {
+      docs = i.documents;
+      for(int j = 0; j < docs.length; j++) {
+        t = docs.elementAt(i)['datetime'].toDate();
+        if(_selectedDate != null)
+          if(_selectedDate.day == t.day && _selectedDate.month == t.month){
+            if(_availableTimes.contains(TimeOfDay.fromDateTime(t)))
+              _availableTimes.remove(TimeOfDay.fromDateTime(t));
+          }
+      }
+    }
+  }
+
   Widget _timePicker(BuildContext context){
     var docs, t;
     List<TimeOfDay> _availableTimes = new List();
