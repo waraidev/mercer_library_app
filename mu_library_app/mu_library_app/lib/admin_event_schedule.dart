@@ -26,92 +26,122 @@ class _EventScheduleState extends State<AdminEventSchedule> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Schedule an Event")),
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            SizedBox(height: 50),
-            Container(
-              height: 50,
-              width: MediaQuery.of(context).size.width * 0.7,
-              child: RaisedButton(
-                child: Text("Select a date..."),
-                onPressed: () => _selectDate(context),
-              ),
+      body: Container(
+        padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom
+        ),
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/willingham.jpg"),
+            fit: BoxFit.cover,
+            matchTextDirection: true,
+            //Reduce opacity of background image
+            colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(0.15),
+                BlendMode.dstATop
             ),
-            Container(
-              padding: EdgeInsets.all(8.0),
-              height: 30,
-              child: Text(_selectedDate == null ?
-              'No date selected.' :
-              DateFormat("'Date: 'MMM dd, yyyy").format(_selectedDate))
-            ),
-            Container(
-              height: 50,
-              width: MediaQuery.of(context).size.width * 0.7,
-              child: RaisedButton(
-                child: Text("Select a start time..."),
-                onPressed: () => _selectTime(
-                    context,
-                    TimeOfDay(hour: 9, minute: 0),
-                    true
-                ),
-              ),
-            ),
-            Container(
-                padding: EdgeInsets.all(8.0),
-                height: 30,
-                child: Text(_startTime == null ?
-                'No start time selected.' :
-                'Start Time: ' + _startTime.format(context))
-            ),
-            Container(
-              height: 50,
-              width: MediaQuery.of(context).size.width * 0.7,
-              child: RaisedButton(
-                child: Text("Select a end time..."),
-                onPressed: () => _selectTime(
-                    context,
-                    _startTime,
-                    false
-                ),
-              ),
-            ),
-            Container(
-                padding: EdgeInsets.all(8.0),
-                height: 30,
-                child: Text(_endTime == null ?
-                'No end time selected.' :
-                'End Time: ' + _endTime.format(context))
-            ),
+          ),
+        ),
 
-            SizedBox(height: 30),
-            _selectedDate == null || _startTime == null || _endTime == null
-                ? Container() :
-            Container(
-              height: MediaQuery.of(context).size.height * 0.165,
-              width: MediaQuery.of(context).size.width * 0.6,
-              padding: EdgeInsets.all(15),
-              color: Colors.orange,
-              child: RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  style: TextStyle(         //Rich Text allows the first part to
-                    color: Colors.black,               //be bold
-                    height: 1.3,
-                    fontWeight: FontWeight.bold
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(height: 50),
+
+                Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  child: RaisedButton(
+                    child: Text("Select a date..."),
+                    onPressed: () => _selectDate(context),
                   ),
-                  children: <TextSpan>[
-                    TextSpan(text: 
-                      DateFormat("MMM dd, yyyy").format(_selectedDate) + '\n'
-                    ),
-                    TextSpan(text: "from\n",),
-                    TextSpan(text: _startTime.format(context) + ' to ' +
-                      _endTime.format(context))
-                  ]
-                )
-              ),
+                ),
+
+                Container(
+                    padding: EdgeInsets.all(8.0),
+                    height: 30,
+                    child: Text(_selectedDate == null ?
+                    'No date selected.' :
+                    DateFormat("'Date: 'MMM dd, yyyy").format(_selectedDate))
+                ),
+
+                Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  child: RaisedButton(
+                    child: Text("Select a start time..."),
+                    onPressed: () =>
+                        _selectTime(
+                            context,
+                            TimeOfDay(hour: 9, minute: 0),
+                            true
+                        ),
+                  ),
+                ),
+
+                Container(
+                    padding: EdgeInsets.all(8.0),
+                    height: 30,
+                    child: Text(_startTime == null ?
+                    'No start time selected.' :
+                    'Start Time: ' + _startTime.format(context))
+                ),
+                Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  child: RaisedButton(
+                    child: Text("Select a end time..."),
+                    onPressed: () =>
+                        _selectTime(
+                            context,
+                            _startTime,
+                            false
+                        ),
+                  ),
+                ),
+                Container(
+                    padding: EdgeInsets.all(8.0),
+                    height: 30,
+                    child: Text(_endTime == null ?
+                    'No end time selected.' :
+                    'End Time: ' + _endTime.format(context))
+                ),
+
+                SizedBox(height: 30),
+                _selectedDate == null || _startTime == null || _endTime == null
+                    ? Container() :
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.165,
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  padding: EdgeInsets.all(14),
+                  color: Colors.orange,
+                  child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                          style: TextStyle( //Rich Text allows the first part to
+                              color: Colors.black, //be bold
+                              height: 1.3,
+                              fontWeight: FontWeight.bold
+                          ),
+                          children: <TextSpan>[
+                            TextSpan(text:
+                            DateFormat("MMM dd, yyyy").format(_selectedDate) +
+                                '\n'
+                            ),
+                            TextSpan(text: "from\n",),
+                            TextSpan(text: _startTime.format(context) + ' to ' +
+                                _endTime.format(context))
+                          ]
+                      )
+                  ),
+                ),
+              ],
             ),
-          ]
+          ),
         ),
       ),
 
