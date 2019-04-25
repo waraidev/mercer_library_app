@@ -609,6 +609,7 @@ class _MainFormState extends State<MainForm>{
       _isSubmitting = true;
     });
 
+    //Verify the user input is complete.
     if(_nameInput.text.isEmpty || _muidInput.text.isEmpty ||
         _emailInput.text.isEmpty || _emailError != null ||
         _majorInput.text.isEmpty || _selectedDate == null ||

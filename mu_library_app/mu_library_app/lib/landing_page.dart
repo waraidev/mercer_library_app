@@ -182,7 +182,7 @@ class _LandingPageState extends State<LandingPage>{
                   passCtrl.clear();
                   if(inputPass == _pass){
                     Navigator.pop(context);
-                    _navToPage(AdminLandingPage());
+                    _turnOnAdmin();
                   } else if(inputPass != _pass && inputPass != '') {
                     Navigator.of(context).pop();
                     showDialog(
