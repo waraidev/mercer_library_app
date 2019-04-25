@@ -762,23 +762,4 @@ class _MainFormState extends State<MainForm>{
       Navigator.pop(context);
     }
   }
-
-  //TODO: Find a way to use this function?
-  void _clear(){
-    setState(() {
-      _nameInput.clear();
-      _muidInput.clear();
-      _emailInput.clear();
-      _majorInput.clear();
-      _detailInput.clear();
-      _isLocChosen = false;
-      _isDateChosen = false;
-      _errorText = null;
-      _selDateTimeStr = "No date selected.";
-      _selectedDate = null;
-      _selectedTime = null;
-      _selectedLocation = null;
-      _specificLoc = null;
-    });
-  }
 }

@@ -22,6 +22,14 @@ class _AdminLandingPageState extends State<AdminLandingPage>{
           leading: Container(),
           title: Text("Admin Mode"),
         ),
+        floatingActionButton: FloatingActionButton.extended(
+          icon: Icon(Icons.arrow_back),
+          label: Text("Logout"),
+          heroTag: null,
+          tooltip: "Logout",
+          onPressed: () => _turnOffAdmin(context),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         body: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
@@ -61,15 +69,6 @@ class _AdminLandingPageState extends State<AdminLandingPage>{
                       onPressed: () => _navToPage(AdminEventSchedule()),
                     )
                   ),
-
-                  //TODO: Replace this with a smaller button in the corner
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    child: RaisedButton(
-                      child: _buttonText("Turn Off Admin Mode"),
-                      onPressed: () => _turnOffAdmin(context),
-                    ),
-                  )
                 ],
               ),
             ),

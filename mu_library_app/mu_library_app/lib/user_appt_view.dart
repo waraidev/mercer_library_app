@@ -46,7 +46,13 @@ class _ViewState extends State<ViewAppts> {
         child: StreamBuilder<QuerySnapshot>(
           stream: mainReference.snapshots(),
           builder: (context, snapshot) {
-            if (!snapshot.hasData) return CircularProgressIndicator();
+            if (!snapshot.hasData)
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  CircularProgressIndicator()
+                ],
+              );
 
             List<DocumentSnapshot> docList = snapshot.data.documents;
 

@@ -19,6 +19,7 @@ dependencies:
   sprintf: "^4.0.0"
   cloud_firestore: ^0.9.7
   intl: 0.15.7
+  url_launcher:
 
   # These may be used later for login services,
   # so they are going to stick around for now.

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'admin_landing_page.dart';
 import 'book_appt_form.dart';
 import 'user_appt_view.dart';
@@ -17,7 +18,7 @@ class _LandingPageState extends State<LandingPage>{
 
   final String _adminKey = "admin_mode";
   //TODO: Change _pass to a different password or other password method
-  final String _pass = "underwoodmoney";
+  final String _pass = "1833mercer";
 
   TextEditingController passCtrl = new TextEditingController();
 
@@ -45,6 +46,15 @@ class _LandingPageState extends State<LandingPage>{
       return false;
   }
 
+  void _launchURL(String url) async {
+
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -57,6 +67,14 @@ class _LandingPageState extends State<LandingPage>{
           )
         ],
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        icon: Icon(Icons.local_library),
+        label: Text("Go to the MU Library website"),
+        heroTag: null,
+        tooltip: "Library Website",
+        onPressed: () => _launchURL("https://libraries.mercer.edu/"),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -73,12 +91,19 @@ class _LandingPageState extends State<LandingPage>{
 
         child: Center(
           child: Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: EdgeInsets.fromLTRB(
+                8+MediaQuery.of(context).size.width * 0.15,
+                8,
+                8+MediaQuery.of(context).size.width * 0.15,
+                8
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Center(child: Text("Welcome", textScaleFactor: 3.0,),),
+                Center(child: Text("Welcome", textScaleFactor: 3.0)),
+
+                SizedBox(height: 20),
 
                 RaisedButton(
                   child: _buttonText("Book an Appointment"),
@@ -88,14 +113,6 @@ class _LandingPageState extends State<LandingPage>{
                 RaisedButton(
                   child: _buttonText("View Your Appointments"),
                   onPressed: () => _navToPage(ViewAppts()),
-                ),
-                //TODO: Add something that takes the user to the library website.
-                //I feel like the librarians would enjoy having that.
-
-                //TODO: Remove this eventually
-                RaisedButton(
-                    child: _buttonText("Turn On Admin Mode"),
-                    onPressed: _turnOnAdmin,
                 ),
               ],
             ),
