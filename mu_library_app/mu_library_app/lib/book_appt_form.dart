@@ -444,7 +444,7 @@ class _MainFormState extends State<MainForm>{
           stream: lib,
           builder: (context, snapLib) {
             if(_isSubmitting) return Container(); //Avoids null call when firebase refreshes
-            else if(!snapAppt.hasData && !snapLib.hasData)
+            else if(!snapAppt.hasData || !snapLib.hasData)
               return CircularProgressIndicator();      //loads
 
             apptDocs = snapAppt.data.documents;
