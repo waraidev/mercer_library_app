@@ -24,6 +24,7 @@ class _MainFormState extends State<MainForm>{
       _specificLoc, _errorText, _emailError,
       _meetingType;
   bool _isLocChosen, _isDateChosen;
+  bool _isSubmitting;
   static final List<String> _dropdownItems = <String>[
     'Connell Student Center', 'Mercer Village', 'University Center',
     'Tarver Library', "Einstein's", 'Stetson Computer Labs'
@@ -59,6 +60,7 @@ class _MainFormState extends State<MainForm>{
     _selectedTime = null;
     _selectedLocation = null;
     _specificLoc = null;
+    _isSubmitting = false;
   }
 
   @override
@@ -426,100 +428,106 @@ class _MainFormState extends State<MainForm>{
     }
   }
 
-  void removeAvailableTimes() async {   //Replicates functionality below, test later
-    var docs, t;
-    List<TimeOfDay> _availableTimes = new List();
-    for(int i = 9; i <= 16; i++)
-      _availableTimes.add(TimeOfDay(hour: i, minute: 0));
-
-    List<QuerySnapshot> snaps = await mainReference.snapshots().toList();
-    for (var i in snaps) {
-      docs = i.documents;
-      for(int j = 0; j < docs.length; j++) {
-        t = docs.elementAt(i)['datetime'].toDate();
-        if(_selectedDate != null)
-          if(_selectedDate.day == t.day && _selectedDate.month == t.month){
-            if(_availableTimes.contains(TimeOfDay.fromDateTime(t)))
-              _availableTimes.remove(TimeOfDay.fromDateTime(t));
-          }
-      }
-    }
-  }
-
   Widget _timePicker(BuildContext context){
-    var docs, t;
+    var apptDocs, libDocs, apptTime, libTime;
     List<TimeOfDay> _availableTimes = new List();
     for(int i = 9; i <= 16; i++)
       _availableTimes.add(TimeOfDay(hour: i, minute: 0));
+
+    Stream<QuerySnapshot> appts = Firestore.instance.collection('appointments').snapshots();
+    Stream<QuerySnapshot> lib = Firestore.instance.collection('librarian').snapshots();
 
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('appointments').snapshots(),
-      builder: (context, snapshot) {
-        if(!snapshot.hasData) return CircularProgressIndicator();
-        docs = snapshot.data.documents;
-        for(int i = 0; i < docs.length; i++) {
-          t = docs.elementAt(i)['datetime'].toDate();
-          if(_selectedDate != null)
-            if(_selectedDate.day == t.day && _selectedDate.month == t.month){
-              if(_availableTimes.contains(TimeOfDay.fromDateTime(t)))
-                _availableTimes.remove(TimeOfDay.fromDateTime(t));
+      stream: appts,
+      builder: (context, snapAppt) {
+        return StreamBuilder<QuerySnapshot>(
+          stream: lib,
+          builder: (context, snapLib) {
+            if(_isSubmitting) return Container(); //Avoids null call when firebase refreshes
+            else if(!snapAppt.hasData && !snapLib.hasData)
+              return CircularProgressIndicator();      //loads
+
+            apptDocs = snapAppt.data.documents;
+            libDocs = snapLib.data.documents;
+
+            for(int i = 0; i < apptDocs.length; i++) {
+              for(int j = 0; j < libDocs.length; j++) {
+                apptTime = apptDocs.elementAt(i)['datetime'].toDate();
+                libTime = libDocs.elementAt(j)['datetime'].toDate();
+                if(_selectedDate != null) {
+                  if(_selectedDate.day == apptTime.day &&
+                      _selectedDate.month == apptTime.month){
+                    if(_availableTimes.contains(TimeOfDay.fromDateTime(apptTime)))
+                      _availableTimes.remove(TimeOfDay.fromDateTime(apptTime));
+                  }
+                            //Removes times
+                  if(_selectedDate.day == libTime.day &&
+                      _selectedDate.month == libTime.month){
+                    if(_availableTimes.contains(TimeOfDay.fromDateTime(libTime)))
+                      _availableTimes.remove(TimeOfDay.fromDateTime(libTime));
+                  }
+                }
+              }
             }
 
-          //TODO: Make sure times are only removed for the correct day
-        }
-        //Dropdown functionality below
-        if(_isDateChosen){
-          if(_availableTimes.isEmpty){
-            return DropdownButtonHideUnderline(
-              child: InputDecorator(
-                decoration: InputDecoration(
-                  labelText: 'No times available for the chosen day.',
+            //Dropdown functionality below
+            if(_isDateChosen){
+              if(_availableTimes.isEmpty){
+                return DropdownButtonHideUnderline(
+                  child: InputDecorator(
+                    decoration: InputDecoration(
+                      labelText: 'No times available for the chosen day.',
+                    ),
+                    isEmpty: true,
+                    child: null,
+                  ),
+                );
+              }
+              else {
+                return DropdownButtonHideUnderline(
+                  child: InputDecorator(
+                    decoration: InputDecoration(
+                      labelText: _selectedTime == null ?
+                      'Please select a time...' : 'Time',
+                    ),
+                    isEmpty: _selectedTime == null,
+                    child: new DropdownButton<TimeOfDay>(
+                      value: _selectedTime,
+                      isDense: true,
+                      onChanged: (TimeOfDay newValue) {
+                        setState(() {
+                          if(newValue != _selectedTime || _selectedTime == null){
+                            _selectedTime = newValue;
+                            _rebuildSelDateTimeStr();
+                          }
+                        });
+                      },
+                      items: _availableTimes.map((TimeOfDay value){
+                        return DropdownMenuItem<TimeOfDay>(
+                          value: value,
+                          child: Text(_timeOfDayToString(value)),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                );
+              }
+            }
+            else
+              return DropdownButtonHideUnderline(
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: 'Please select a date first.',
+                  ),
+                  isEmpty: true,
+                  child: null,
                 ),
-                isEmpty: true,
-                child: null,
-              ),
-            );
-          }
-          else {
-            return DropdownButtonHideUnderline(
-              child: InputDecorator(
-                decoration: InputDecoration(
-                  labelText: _selectedTime == null ?
-                  'Please select a time...' : 'Time',
-                ),
-                isEmpty: _selectedTime == null,
-                child: new DropdownButton<TimeOfDay>(
-                  value: _selectedTime,
-                  isDense: true,
-                  onChanged: (TimeOfDay newValue) {
-                    setState(() {
-                      if(newValue != _selectedTime || _selectedTime == null){
-                        _selectedTime = newValue;
-                        _rebuildSelDateTimeStr();
-                      }
-                    });
-                  },
-                  items: _availableTimes.map((TimeOfDay value){
-                    return DropdownMenuItem<TimeOfDay>(
-                      value: value,
-                      child: Text(_timeOfDayToString(value)),
-                    );
-                  }).toList(),
-                ),
-              ),
-            );
-          }
-        }
-        else
-          return DropdownButtonHideUnderline(
-            child: InputDecorator(
-              decoration: InputDecoration(
-                labelText: 'Please select a date first.',
-              ),
-              isEmpty: true,
-              child: null,
-            ),
-          );
+              );
+          },
+        );
+
+
+
 
       },
     );
@@ -598,6 +606,7 @@ class _MainFormState extends State<MainForm>{
 
     setState((){
       _errorText = "";
+      _isSubmitting = true;
     });
 
     if(_nameInput.text.isEmpty || _muidInput.text.isEmpty ||
