@@ -18,8 +18,7 @@ class _AdminLandingPageState extends State<AdminLandingPage>{
       onWillPop: ()async => false,
       child: Scaffold(
         appBar: AppBar(
-          //TODO: Make this look better, or make it look good without
-          leading: Container(),
+          automaticallyImplyLeading: false,
           title: Text("Admin Mode"),
         ),
         floatingActionButton: FloatingActionButton.extended(
