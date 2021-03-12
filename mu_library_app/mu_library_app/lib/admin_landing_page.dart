@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'admin_appt_view.dart';
+import 'admin_event_schedule.dart';
 
 class AdminLandingPage extends StatefulWidget{
   @override
@@ -16,10 +18,17 @@ class _AdminLandingPageState extends State<AdminLandingPage>{
       onWillPop: ()async => false,
       child: Scaffold(
         appBar: AppBar(
-          //TODO: Make this look better, or make it look good without
-          leading: Container(),
+          automaticallyImplyLeading: false,
           title: Text("Admin Mode"),
         ),
+        floatingActionButton: FloatingActionButton.extended(
+          icon: Icon(Icons.arrow_back),
+          label: Text("Logout"),
+          heroTag: null,
+          tooltip: "Logout",
+          onPressed: () => _turnOffAdmin(context),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         body: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
@@ -48,14 +57,21 @@ class _AdminLandingPageState extends State<AdminLandingPage>{
                     onPressed: null,
                   ),
 
-                  RaisedButton(
-                    child: _buttonText("Schedule an Event"),
-                    onPressed: null,
+                  SizedBox(height: 20),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    child: RaisedButton(
+                      child: _buttonText("View All Appointments"),
+                      onPressed: () => _navToPage(ViewAdminAppt()),
+                    ),
                   ),
 
-                  RaisedButton(
-                    child: _buttonText("Turn Off Admin Mode"),
-                    onPressed: () => _turnOffAdmin(context),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    child: RaisedButton(
+                      child: _buttonText("Schedule an Event"),
+                      onPressed: () => _navToPage(AdminEventSchedule()),
+                    )
                   ),
                 ],
               ),
@@ -70,6 +86,12 @@ class _AdminLandingPageState extends State<AdminLandingPage>{
     final FlutterSecureStorage storage = FlutterSecureStorage();
     await storage.write(key: _adminKey, value: "false");
     Navigator.of(context).pop();
+  }
+
+  void _navToPage(Widget widget) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => widget)
+    );
   }
 }
 

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'admin_landing_page.dart';
 import 'book_appt_form.dart';
+import 'user_appt_view.dart';
 
 class LandingPage extends StatefulWidget{
   LandingPage({Key key, this.title}) : super(key: key);
@@ -16,7 +18,7 @@ class _LandingPageState extends State<LandingPage>{
 
   final String _adminKey = "admin_mode";
   //TODO: Change _pass to a different password or other password method
-  final String _pass = "underwoodmoney";
+  final String _pass = "1833mercer";
 
   TextEditingController passCtrl = new TextEditingController();
 
@@ -31,17 +33,26 @@ class _LandingPageState extends State<LandingPage>{
     super.initState();
     _getMode().then((result){
       if(result)
-        _navToAdminLandingPage();
+        _navToPage(AdminLandingPage());
     });
   }
 
   Future<bool> _getMode() async{
     final FlutterSecureStorage storage = FlutterSecureStorage();
-    String _admin = await storage.read(key: _adminKey);
-    if(_admin != null || _admin == "true")
+    String _admin = await storage.read(key: _adminKey) ?? "false";
+    if(_admin == "true")
       return true;
     else
       return false;
+  }
+
+  void _launchURL(String url) async {
+
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   @override
@@ -56,6 +67,14 @@ class _LandingPageState extends State<LandingPage>{
           )
         ],
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        icon: Icon(Icons.local_library),
+        label: Text("Go to the MU Library website"),
+        heroTag: null,
+        tooltip: "Library Website",
+        onPressed: () => _launchURL("https://libraries.mercer.edu/"),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -71,33 +90,29 @@ class _LandingPageState extends State<LandingPage>{
         ),
 
         child: Center(
-          //TODO: Make this look better
           child: Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: EdgeInsets.fromLTRB(
+                8+MediaQuery.of(context).size.width * 0.15,
+                8,
+                8+MediaQuery.of(context).size.width * 0.15,
+                8
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                //TODO: Take a look at this and compare to other page
-                // which is better?
-                Center(child: Text("Welcome", textScaleFactor: 3.0,),),
+                Center(child: Text("Welcome", textScaleFactor: 3.0)),
+
+                SizedBox(height: 20),
 
                 RaisedButton(
                   child: _buttonText("Book an Appointment"),
-                  onPressed: _navToForm,
+                  onPressed: () => _navToPage(MainForm()),
                 ),
 
                 RaisedButton(
                   child: _buttonText("View Your Appointments"),
-                  onPressed: null,
-                ),
-                //TODO: Add something that takes the user to the library website.
-                //I feel like the librarians would enjoy having that.
-
-                //TODO: Remove this eventually
-                RaisedButton(
-                    child: _buttonText("Turn On Admin Mode"),
-                    onPressed: _turnOnAdmin,
+                  onPressed: () => _navToPage(ViewAppts()),
                 ),
               ],
             ),
@@ -116,22 +131,16 @@ class _LandingPageState extends State<LandingPage>{
     );
   }
 
-  void _navToAdminLandingPage(){
+  void _navToPage(Widget widget) {
     Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AdminLandingPage())
-    );
-  }
-
-  void _navToForm(){
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => MainForm())
+        MaterialPageRoute(builder: (context) => widget)
     );
   }
 
   void _turnOnAdmin() async{
     final FlutterSecureStorage storage = FlutterSecureStorage();
     await storage.write(key: _adminKey, value: "true");
-    _navToAdminLandingPage();
+    _navToPage(AdminLandingPage());
   }
 
   void _navToAdminLandingPage2(){
@@ -144,49 +153,55 @@ class _LandingPageState extends State<LandingPage>{
               Radius.circular(10.0))),
       title: Center(child: Text('LOGIN')),
       children: <Widget>[
-        Center(child: Text('Enter the admin password below:')),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Center(child: Text('Enter the admin password below:')),
 
-        GestureDetector(
-          onTap: () {
-            FocusScope.of(context).requestFocus( FocusNode());
-          },
-          child: TextField(
-              controller: passCtrl,
-              obscureText: true,
-              decoration: InputDecoration(
-                  labelText: "Password",
-                  contentPadding: EdgeInsets.symmetric(vertical: 6.0,
-                      horizontal: 8.0),
-                  hintText: "Enter Admin Password"
+              GestureDetector(
+                  onTap: () {
+                    FocusScope.of(context).requestFocus( FocusNode());
+                  },
+                  child: TextField(
+                    controller: passCtrl,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                        labelText: "Password",
+                        contentPadding: EdgeInsets.symmetric(vertical: 6.0,
+                            horizontal: 8.0),
+                        hintText: "Enter Admin Password"
+                    ),
+                  )
               ),
-          )
-        ),
-        RaisedButton(
-          child: Text("Done"),
-          onPressed: () {
-            String inputPass = passCtrl.text;
-            passCtrl.clear();
-            if(inputPass == _pass){
-              Navigator.pop(context);
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => AdminLandingPage())
-              );
-            } else if(inputPass != _pass && inputPass != '') {
-              Navigator.of(context).pop();
-              showDialog(
-                  context: context,
-                  builder: (context) { return error; }
-              );
-            }
-          },
-        ),
+              RaisedButton(
+                child: Text("Done"),
+                onPressed: () {
+                  String inputPass = passCtrl.text;
+                  passCtrl.clear();
+                  if(inputPass == _pass){
+                    Navigator.pop(context);
+                    _turnOnAdmin();
+                  } else if(inputPass != _pass && inputPass != '') {
+                    Navigator.of(context).pop();
+                    showDialog(
+                        context: context,
+                        builder: (context) { return error; }
+                    );
+                  }
+                },
+              ),
 
-        RaisedButton(
-          child: Text("Cancel"),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        )
+              RaisedButton(
+                child: Text("Cancel"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          ),
+        ),
       ],
     );
 
