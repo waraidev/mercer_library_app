@@ -279,15 +279,163 @@ class _MainFormState extends State<MainForm>{
           child: Padding(
             padding: EdgeInsets.all(_pad),
             child: Center(
+              //TODO: Should the sign-up include name?
+              // How anonymous should it be?
               child: ListView(
                 //crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: formWidgets
+                children: <Widget>[
+                  Text(_errorText ==  null ? "" : _errorText,
+                    textScaleFactor: 1.4,
+                    style: TextStyle(
+                      color: Colors.red,
+                      //fontStyle: FontStyle.italic,
+                    ),
+                  ),
+
+                  TextField(
+                    controller: _nameInput,
+                    onEditingComplete: (){
+                      FocusScope.of(context).requestFocus(FocusNode());
+                    },
+                    textCapitalization: TextCapitalization.words,
+                    decoration: InputDecoration(
+                      hintText: "Please enter your name",
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.orange[700]),
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
+                      labelText: "Name",
+                    ),
+                  ),
+
+                  SizedBox(height: _pad),
+
+                  TextField(
+                    controller: _muidInput,
+                    keyboardType: TextInputType.number,
+                    maxLength: 8,
+                    maxLengthEnforced: true,
+                    onEditingComplete: (){
+                      FocusScope.of(context).requestFocus(FocusNode());
+                    },
+                    decoration: InputDecoration(
+                      hintText: "Please enter your MUID",
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.orange[700]),
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
+                      labelText: "MUID",
+                      counterText: "",
+                    ),
+                  ),
+
+                  SizedBox(height: _pad,),
+
+                  TextField(
+                    controller: _emailInput,
+                    onEditingComplete: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      _validateEmail();
+                    },
+                    keyboardType: TextInputType.emailAddress,
+                    textCapitalization: TextCapitalization.none,
+                    decoration: InputDecoration(
+                      hintText: "Please enter your email address",
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.orange[700]),
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
+                      labelText: "Email",
+                    ),
+                  ),
+
+                  Text(_emailError ==  null ? "" : _emailError,
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+
+                  SizedBox(height: _pad,),
+
+                  TextField(
+                    controller: _majorInput,
+                    onEditingComplete: () {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                    },
+                    textCapitalization: TextCapitalization.none,
+                    decoration: InputDecoration(
+                      hintText: "What is your major?",
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.orange[700]),
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
+                      labelText: "Major/Dept.",
+                    ),
+                  ),
+
+                  SizedBox(height: _pad - 1,),
+
+                  Container(
+                    height: 50,
+                    child: RaisedButton(
+                      child: Text("Select a date/time..."),
+                      onPressed: () => _selectDateTime(context),
+                    ),
+                  ),
+
+                  SizedBox(height: _pad/2,),
+
+                  Text(_selDateTimeStr,
+                    textScaleFactor: 1.3,
+                    style: TextStyle(fontWeight: FontWeight.bold,),
+                  ),
+
+                  SizedBox(height: _pad - 1,),
+
+                  _timePicker(context),
+
+                  DropdownButtonHideUnderline(
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: _selectedLocation == null ?
+                          'Please select a location...' : 'Location',
+                      ),
+                      isEmpty: _selectedLocation == null,
+                      child: new DropdownButton<String>(
+                        value: _selectedLocation,
+                        isDense: true,
+                        onChanged: (String newValue) {
+                          setState(() {
+                            if(newValue != _selectedLocation || _selectedLocation == null) {
+                              _isLocChosen = false;
+                              _selectedLocation = newValue;
+                              _specificLoc = null;
+                              _isLocChosen = true;
+                            }
+                          });
+                        },
+                        items: _dropdownItems.map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: _pad,),
+
+                 _chooseSpecificLoc(context),
+
+                  //TODO: Add one more text field describing research needs
+                ],
               ),
             ),
           ),
         ),
       ),
-
       //Submit Button
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.check),
@@ -297,8 +445,6 @@ class _MainFormState extends State<MainForm>{
       ),
     );
   }
-
-  ////////////////////////////////////////////////////////////////////////////
 
   void _validateEmail(){
     if(_emailInput.text.isEmpty) return;
@@ -762,5 +908,23 @@ class _MainFormState extends State<MainForm>{
       //get outta that page
       Navigator.pop(context);
     }
+  }
+
+  //TODO: Find a way to use this function?
+  void _clear(){
+    setState(() {
+      _nameInput.clear();
+      _muidInput.clear();
+      _emailInput.clear();
+      _majorInput.clear();
+      _isLocChosen = false;
+      _isDateChosen = false;
+      _errorText = null;
+      _selDateTimeStr = "No date selected.";
+      _selectedDate = null;
+      _selectedTime = null;
+      _selectedLocation = null;
+      _specificLoc = null;
+    });
   }
 }

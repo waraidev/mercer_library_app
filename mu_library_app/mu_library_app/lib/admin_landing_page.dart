@@ -47,10 +47,15 @@ class _AdminLandingPageState extends State<AdminLandingPage>{
             child: Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text("Welcome, Admin", textScaleFactor: 2.8),
+                  Center(child: Text("Welcome, Admin", textScaleFactor: 2.5,),),
+
+                  RaisedButton(
+                    child: _buttonText("View All Appointments"),
+                    onPressed: null,
+                  ),
 
                   SizedBox(height: 20),
                   Container(
